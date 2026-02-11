@@ -4,473 +4,919 @@ index.html
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Morpheme Playground (3–6)</title>
+  <title>Morpheme Matrix Builder (Grades 3–5)</title>
   <style>
-    :root { --bg:#0b1020; --card:#121a33; --muted:#a9b2d6; --text:#eef1ff; --accent:#7aa7ff; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:linear-gradient(180deg,#070a14, var(--bg)); color:var(--text); }
-    header { padding:22px 16px 8px; max-width: 1040px; margin:0 auto; }
-    h1 { margin:0 0 6px; font-size: 22px; letter-spacing: .2px; }
-    .sub { color: var(--muted); margin:0; font-size: 14px; line-height: 1.45; }
-
-    main { max-width: 1040px; margin: 0 auto; padding: 16px; }
-    .grid { display:grid; gap:12px; grid-template-columns: 1fr; }
-    @media (min-width: 920px){ .grid { grid-template-columns: 1.2fr .8fr; } }
-
-    .card { background: rgba(18,26,51,.9); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 14px; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
-    label { font-size: 13px; color: var(--muted); }
-    select, button, input {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      padding: 10px 10px;
-      border-radius: 12px;
+    :root{
+      --bg1:#7dd3ff;
+      --bg2:#b8ffcf;
+      --bg3:#ffe38d;
+      --card:#ffffffee;
+      --ink:#13233f;
+      --muted:#3b5876;
+      --a:#7a5cff;
+      --b:#ff4fb6;
+      --c:#ff9f1c;
+      --ok:#2ecc71;
+      --shadow: 0 18px 60px rgba(0,0,0,.16);
+      --r: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,.9) 0 7%, transparent 9%),
+        radial-gradient(circle at 85% 18%, rgba(255,255,255,.85) 0 6%, transparent 8%),
+        radial-gradient(circle at 22% 84%, rgba(255,255,255,.8) 0 7%, transparent 9%),
+        linear-gradient(155deg, var(--bg1), var(--bg2), var(--bg3));
+      min-height:100vh;
+    }
+    header{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 14px 6px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size: 22px;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.35;
       font-size: 14px;
+      font-weight: 700;
+    }
+
+    main{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 14px 24px;
+    }
+    .app{
+      background: var(--card);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(19,35,63,.10);
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px;
+      background:
+        linear-gradient(90deg, rgba(122,92,255,.16), rgba(255,79,182,.12), rgba(255,159,28,.14));
+      border-bottom: 2px dashed rgba(19,35,63,.18);
+    }
+    .control{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    label{
+      font-size:13px;
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: .15px;
+    }
+    select, button{
+      border-radius: 14px;
+      border: 2px solid rgba(19,35,63,.16);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 900;
       outline: none;
     }
-    button { cursor:pointer; }
-    button:hover { border-color: rgba(122,167,255,.6); }
-
-    .pickerWrap { display:grid; grid-template-columns: auto 1fr auto; gap:10px; align-items:center; }
-    .strip {
-      display:flex; gap:10px; overflow:auto; scroll-snap-type: x mandatory;
-      padding: 8px; border-radius: 14px;
-      border: 1px dashed rgba(255,255,255,.14);
-      background: rgba(255,255,255,.03);
+    button{
+      cursor:pointer;
+      box-shadow: 0 6px 0 rgba(19,35,63,.10);
+      transition: transform .06s ease;
     }
-    .chip {
-      flex: 0 0 auto;
-      min-width: 168px;
-      scroll-snap-align: start;
-      padding: 10px 12px;
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      border-color: rgba(122,92,255,.35);
+      background: rgba(122,92,255,.12);
+    }
+    button.ghost{
+      background: rgba(255,255,255,.75);
+    }
+
+    .matrix{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px;
+    }
+    @media (min-width: 900px){
+      .matrix{ grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .pane{
+      border-radius: 16px;
+      border: 2px solid rgba(19,35,63,.12);
+      background: rgba(255,255,255,.80);
+      padding: 12px;
+      min-height: 300px;
+    }
+    .paneTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .paneTitle h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing:.2px;
+      color: var(--muted);
+      font-weight: 1000;
+    }
+    .pill{
+      display:inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 1000;
+      border: 2px solid rgba(19,35,63,.12);
+      background: rgba(255,159,28,.18);
+    }
+
+    .rootCard{
+      text-align:center;
+      padding: 16px 12px;
+      border-radius: 16px;
+      border: 2px solid rgba(122,92,255,.22);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,79,182,.16), transparent 35%),
+        radial-gradient(circle at 85% 30%, rgba(122,92,255,.18), transparent 35%),
+        radial-gradient(circle at 30% 90%, rgba(255,159,28,.20), transparent 35%),
+        rgba(122,92,255,.06);
+      min-height: 300px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:10px;
+    }
+    .rootText{
+      font-size: 42px;
+      font-weight: 1100;
+      letter-spacing: .6px;
+    }
+    .rootAlt{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .rootMeaning{
+      font-size: 16px;
+      font-weight: 1100;
+    }
+    .tiny{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    /* Lists: always readable (no hidden chips) */
+    .list{
+      height: 240px;
+      overflow:auto;
+      padding-right: 4px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
-      user-select: none;
+      border: 2px dashed rgba(19,35,63,.18);
+      background: rgba(255,255,255,.78);
     }
-    .chip strong { display:block; font-size: 16px; }
-    .chip small { display:block; color: var(--muted); margin-top: 2px; }
-    .chip.active { border-color: rgba(122,167,255,.8); box-shadow: 0 0 0 3px rgba(122,167,255,.18); }
-
-    .matrix { display:grid; gap:12px; grid-template-columns: 1fr; }
-    @media (min-width: 620px){ .matrix { grid-template-columns: 1fr 1fr 1fr; } }
-
-    .cellTitle { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-    .rootBox { text-align:center; padding: 16px 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.10); background: rgba(122,167,255,.10); }
-    .rootBox .root { font-size: 30px; font-weight: 800; letter-spacing: .3px; }
-    .rootBox .alts { margin-top: 6px; font-size: 13px; color: var(--muted); }
-    .rootBox .meaning { color: var(--text); margin-top: 10px; font-size: 15px; font-weight: 650; }
-    .rootBox .type { margin-top: 8px; font-size: 12px; color: var(--muted); }
-
-    .outLine {
-      display:grid; grid-template-columns: 1fr; gap:10px;
-      padding: 10px 12px; border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03);
-      margin-top: 12px;
+    .item{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      padding: 10px 10px;
+      margin: 8px;
+      border-radius: 14px;
+      border: 2px solid rgba(19,35,63,.12);
+      background: #fff;
+      cursor:pointer;
+      user-select:none;
     }
-    @media (min-width: 620px){ .outLine { grid-template-columns: 1fr 1fr; } }
-    .outLine .k { color: var(--muted); font-size: 12px; }
-    .outLine .v { font-size: 18px; font-weight: 800; margin-top: 2px; }
+    .item strong{ font-size: 16px; font-weight: 1100; }
+    .item span{ color: var(--muted); font-size: 12px; font-weight: 900; }
+    .item.active{
+      border-color: rgba(255,79,182,.70);
+      box-shadow: 0 0 0 4px rgba(255,79,182,.16);
+      background: rgba(255,79,182,.08);
+    }
+    .item.disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter: grayscale(.2);
+    }
 
-    .meaningBox { margin-top: 12px; padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.12); }
-    .meaningBox h3 { margin:0 0 8px; font-size: 14px; color: var(--muted); font-weight: 650; }
-    .meaningBox p { margin:0; line-height: 1.45; }
-    .tiny { font-size: 12px; color: var(--muted); margin-top: 8px; }
-    .badge { display:inline-block; padding: 2px 8px; border-radius: 999px; background: rgba(122,167,255,.18); border: 1px solid rgba(122,167,255,.35); color: var(--text); font-size: 12px; }
-    .hint { color: var(--muted); font-size: 13px; margin-top: 8px; line-height: 1.45; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; }
+    .outputs{
+      padding: 0 14px 14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 900px){
+      .outputs{ grid-template-columns: 1fr 1fr; }
+    }
+    .outCard{
+      border-radius: 16px;
+      border: 2px solid rgba(19,35,63,.12);
+      background: rgba(255,255,255,.88);
+      padding: 12px;
+    }
+    .outLabel{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 1100;
+      letter-spacing:.2px;
+      margin-bottom: 6px;
+    }
+    .outValue{
+      font-size: 22px;
+      font-weight: 1200;
+      letter-spacing:.2px;
+      min-height: 28px;
+    }
+    .meaning{
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 900;
+      line-height: 1.4;
+    }
+    .ok{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:1100;
+      color: #0e3b1f;
+      background: rgba(46,204,113,.18);
+      border: 2px solid rgba(46,204,113,.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    .warn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:1100;
+      color: #5d2a00;
+      background: rgba(255,159,28,.18);
+      border: 2px solid rgba(255,159,28,.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* Hidden teacher loader modal (not visible unless opened with shortcut) */
+    .modalWrap{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .modal{
+      width: min(900px, 100%);
+      background: #fff;
+      border-radius: 18px;
+      border: 2px solid rgba(19,35,63,.16);
+      box-shadow: 0 22px 80px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .modalTop{
+      padding: 12px 14px;
+      background: linear-gradient(90deg, rgba(122,92,255,.14), rgba(255,79,182,.12), rgba(255,159,28,.14));
+      border-bottom: 2px dashed rgba(19,35,63,.18);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalTop strong{ font-weight: 1200; }
+    .modalBody{ padding: 14px; }
+    textarea{
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 2px solid rgba(19,35,63,.16);
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      outline:none;
+    }
+    .modalRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Morpheme Playground</h1>
-    <p class="sub">
-      Pick a <span class="badge">root/base</span>. Then scroll to choose a <span class="badge">prefix</span> and <span class="badge">suffix</span>.
-      Read the word sum and the meaning.
-    </p>
+    <h1>Morpheme Matrix Builder</h1>
+    <p class="subtitle">Pick a root/base. Then click a prefix and suffix to build a <b>real word</b>.</p>
   </header>
 
-  <main class="grid">
-    <section class="card">
-      <div class="row" style="justify-content:space-between;">
-        <div style="min-width: 280px;">
-          <label for="matrixSelect">Choose a root/base:</label><br/>
-          <select id="matrixSelect"></select>
-          <div class="hint" id="rootHint"></div>
+  <main>
+    <div class="app" role="application" aria-label="Morpheme Matrix Builder">
+      <div class="topbar">
+        <div class="control">
+          <label for="matrixSelect">Matrix:</label>
+          <select id="matrixSelect" aria-label="Choose a matrix"></select>
         </div>
-        <div class="row">
-          <button id="randomBtn" title="Pick random prefix/suffix">Random</button>
-          <button id="clearBtn" title="Clear prefix/suffix">Clear</button>
+        <div class="control">
+          <button id="clearBtn" class="ghost" aria-label="Clear prefix and suffix">Clear</button>
+          <button id="randomBtn" class="primary" aria-label="Choose a random real word">Random Real Word</button>
         </div>
       </div>
 
-      <div style="margin-top:14px;" class="matrix">
-        <div>
-          <div class="cellTitle">Prefixes (scroll + click)</div>
-          <div class="pickerWrap">
-            <button id="prefLeft" aria-label="Scroll prefixes left">◀</button>
-            <div id="prefixStrip" class="strip" aria-label="Prefix picker"></div>
-            <button id="prefRight" aria-label="Scroll prefixes right">▶</button>
+      <div class="matrix">
+        <section class="pane" aria-label="Prefixes">
+          <div class="paneTitle">
+            <h2>Prefixes</h2>
+            <span class="pill" id="prefCount">0 options</span>
           </div>
-        </div>
+          <div class="list" id="prefixList" tabindex="0" aria-label="Prefix list"></div>
+          <div class="tiny">Tip: click again to turn a selection off.</div>
+        </section>
 
-        <div>
-          <div class="cellTitle">Root/Base</div>
-          <div class="rootBox">
-            <div class="root" id="rootText">—</div>
-            <div class="alts" id="rootAlts"></div>
-            <div class="meaning" id="rootMeaning">—</div>
-            <div class="type" id="rootType">—</div>
+        <section class="rootCard" aria-label="Root or base">
+          <div class="rootText" id="rootText">—</div>
+          <div class="rootAlt" id="rootAlt"></div>
+          <div class="rootMeaning" id="rootMeaning">—</div>
+          <div class="tiny" id="rootMeta"></div>
+          <div id="statusPill"></div>
+        </section>
+
+        <section class="pane" aria-label="Suffixes">
+          <div class="paneTitle">
+            <h2>Suffixes</h2>
+            <span class="pill" id="sufCount">0 options</span>
           </div>
+          <div class="list" id="suffixList" tabindex="0" aria-label="Suffix list"></div>
+          <div class="tiny">Suffix choices update so words stay real.</div>
+        </section>
+      </div>
+
+      <div class="outputs">
+        <div class="outCard" aria-label="Word sum">
+          <div class="outLabel">WORD SUM</div>
+          <div class="outValue" id="wordSum">—</div>
+          <div class="tiny" id="partMeanings">—</div>
         </div>
 
-        <div>
-          <div class="cellTitle">Suffixes (scroll + click)</div>
-          <div class="pickerWrap">
-            <button id="sufLeft" aria-label="Scroll suffixes left">◀</button>
-            <div id="suffixStrip" class="strip" aria-label="Suffix picker"></div>
-            <button id="sufRight" aria-label="Scroll suffixes right">▶</button>
-          </div>
+        <div class="outCard" aria-label="Word and meaning">
+          <div class="outLabel">WORD + MEANING</div>
+          <div class="outValue" id="finalWord">—</div>
+          <div class="meaning" id="finalMeaning">Choose parts to build a real word.</div>
         </div>
       </div>
-
-      <div class="outLine">
-        <div>
-          <div class="k">Word sum</div>
-          <div class="v" id="wordSum">—</div>
-        </div>
-        <div>
-          <div class="k">Word</div>
-          <div class="v" id="wordFinal">—</div>
-        </div>
-      </div>
-
-      <div class="meaningBox">
-        <h3>Word-part meanings</h3>
-        <p id="partMeanings">—</p>
-        <div class="tiny" id="noteLine"></div>
-      </div>
-
-      <div class="meaningBox">
-        <h3>Word meaning</h3>
-        <p id="wordMeaning">Choose a prefix and/or suffix to see a combined meaning.</p>
-      </div>
-
-      <p class="tiny">Tip: Click a selected chip again to turn it off.</p>
-    </section>
-
-    <section class="card">
-      <h2 style="margin:0 0 10px; font-size:16px;">Teacher / Product Notes</h2>
-
-      <div class="meaningBox">
-        <h3>What you can sell (easy upgrades)</h3>
-        <p class="sub">
-          1) Add more roots (already set up) • 2) Add “Challenge Mode” prompts • 3) Add audio (read parts aloud) •
-          4) Add built-in definitions for common real words (glossary).
-        </p>
-      </div>
-
-      <div class="meaningBox">
-        <h3>How “Word meaning” works</h3>
-        <p class="sub">
-          The app makes a kid-friendly meaning from the parts.
-          For cleaner definitions (like “transport = carry across”), add entries to <code>wordGlossary</code>.
-        </p>
-      </div>
-
-      <div class="meaningBox">
-        <h3>Hosting (free)</h3>
-        <p class="sub">
-          This is one file (<code>index.html</code>). You can host on GitHub Pages or Netlify, or embed in Google Sites.
-        </p>
-      </div>
-    </section>
+    </div>
   </main>
 
+  <!-- Hidden teacher loader (Ctrl/Cmd + Shift + L) -->
+  <div class="modalWrap" id="modalWrap" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Load real word list">
+      <div class="modalTop">
+        <strong id="modalTitle">Load Word Key list</strong>
+        <button id="closeModalBtn" class="ghost">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="tiny">
+          Paste the comma-separated word list for this matrix from the PDF Word Key.
+          (Example format: <b>forms, formed, forming, former</b> …)
+        </div>
+        <textarea id="wordListBox" placeholder="Paste words here..."></textarea>
+        <div class="modalRow">
+          <div class="tiny" id="modalInfo"></div>
+          <div class="control">
+            <button id="resetMatrixBtn" class="ghost">Reset this matrix</button>
+            <button id="saveMatrixBtn" class="primary">Save</button>
+          </div>
+        </div>
+        <div class="tiny" style="margin-top:10px;">
+          Stored on this device/browser only (local storage).
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // =========================
-    // 3–6 FRIENDLY MORPHEME SETS
-    // =========================
+    // ------------------------------------------------------------
+    // DATA: Matrix structure (prefixes/roots/suffixes) from the PDF
+    // The "real words" list is loaded from the Word Key via the
+    // hidden loader (Ctrl/Cmd+Shift+L). :contentReference[oaicite:2]{index=2}
+    //
+    // IMPORTANT: This file includes a SMALL starter real-word set so
+    // it works immediately. For full fidelity, paste each matrix’s
+    // Word Key list into the loader.
+    // ------------------------------------------------------------
 
-    const DEFAULT_PREFIXES = [
-      { text: "—", meaning: "(no prefix)", value: "" },
-      { text: "re", meaning: "again", value: "re" },
-      { text: "un", meaning: "not / undo", value: "un" },
-      { text: "dis", meaning: "not / opposite", value: "dis" },
-      { text: "mis", meaning: "wrong / badly", value: "mis" },
-      { text: "pre", meaning: "before", value: "pre" },
-      { text: "non", meaning: "not", value: "non" },
-      { text: "over", meaning: "too much", value: "over" },
-      { text: "under", meaning: "not enough / below", value: "under" },
-      { text: "sub", meaning: "under / below", value: "sub" },
-      { text: "super", meaning: "above / extra", value: "super" },
-      { text: "inter", meaning: "between", value: "inter" },
-      { text: "trans", meaning: "across", value: "trans" },
-      { text: "tele", meaning: "far / distant", value: "tele" },
-      { text: "bio", meaning: "life", value: "bio" },
-      { text: "geo", meaning: "earth", value: "geo" },
-      { text: "auto", meaning: "self", value: "auto" },
-      { text: "micro", meaning: "small", value: "micro" },
-      { text: "photo", meaning: "light", value: "photo" },
-      { text: "demo", meaning: "people", value: "demo" },
-      { text: "techno", meaning: "skill / art", value: "techno" }
-    ];
+    const NONE = { text:"—", meaning:"(none)", value:"" };
 
-    const DEFAULT_SUFFIXES = [
-      { text: "—", meaning: "(no suffix)", value: "" },
-      { text: "s", meaning: "plural / 3rd-person verb", value: "s" },
-      { text: "ed", meaning: "past tense", value: "ed" },
-      { text: "ing", meaning: "happening now", value: "ing" },
-      { text: "er", meaning: "a person/thing that", value: "er" },
-      { text: "or", meaning: "a person/thing that", value: "or" },
-      { text: "ion", meaning: "act / process", value: "ion" },
-      { text: "tion", meaning: "act / process", value: "tion" },
-      { text: "ment", meaning: "result / thing", value: "ment" },
-      { text: "able", meaning: "can be", value: "able" },
-      { text: "ive", meaning: "tending to / having", value: "ive" },
-      { text: "al", meaning: "relating to", value: "al" },
-      { text: "ful", meaning: "full of", value: "ful" },
-      { text: "less", meaning: "without", value: "less" },
-      { text: "ology", meaning: "study of", value: "ology" },
-      { text: "meter", meaning: "measure", value: "meter" },
-      { text: "scope", meaning: "watch / see", value: "scope" },
-      { text: "graph", meaning: "written / drawn", value: "graph" },
-      { text: "gram", meaning: "written / drawn", value: "gram" },
-      { text: "cracy", meaning: "rule / government", value: "cracy" },
-      { text: "crat", meaning: "a person who rules", value: "crat" }
-    ];
+    // quick meanings (kid-friendly)
+    const prefixMeaning = {
+      "in":"in/into/toward", "im":"in/into/toward",
+      "un":"not/opposite", "mis":"bad/wrong", "dis":"not/apart",
+      "re":"again/back", "de":"down/away", "pre":"before",
+      "en":"put into/on", "em":"put into/on", "sub":"under/below",
+      "inter":"between", "con":"together", "com":"together",
+      "pro":"forward", "per":"through", "ex":"out",
+      "at":"toward", "re-":"again/back", "e":"out"
+    };
+    const suffixMeaning = {
+      "s":"plural / verb -s", "es":"plural / verb -es",
+      "ed":"past tense", "ing":"happening now",
+      "er":"a person/thing", "or":"a person/thing",
+      "ion":"act/state", "sion":"act/state", "tion":"act/state", "ation":"act/state",
+      "able":"can be", "ible":"can be",
+      "al":"relating to", "ial":"relating to",
+      "y":"noun/subject word", "ive":"relating to",
+      "ic":"relating to", "ical":"relating to",
+      "ist":"one who"
+    };
 
-    // =========================
-    // YOUR ROOT/BASE LIST
-    // =========================
-    // Each matrix can also include a custom wordGlossary for better kid-friendly definitions.
+    function P(p){ return { text:p, value:p, meaning: prefixMeaning[p] || "prefix" }; }
+    function S(s){ return { text:s, value:s, meaning: suffixMeaning[s] || "suffix" }; }
+
+    // Matrices 1–18 are Latin-root matrices; 19–25 are Greek-form matrices. :contentReference[oaicite:3]{index=3}
     const MATRICES = [
-      mkRoot("form", ["form"], "to shape", "free", { inform: "to tell someone", reform: "to change to make better", deform: "to change shape in a bad way", "informal": "not fancy; relaxed" }),
-      mkRoot("port", ["port"], "to carry", "bound", { transport: "carry across", import: "carry into", export: "carry out", portable: "easy to carry" }),
-      mkRoot("rupt", ["rupt"], "to break or burst", "bound", { erupt: "burst out", disrupt: "break up / interrupt" }),
-      mkRoot("tract", ["tract"], "to draw or pull", "bound", { attract: "pull toward", retract: "pull back", distract: "pull attention away" }),
-      mkRoot("scrib / script", ["scrib","script"], "to write", "bound", { describe: "write/tell details about", transcript: "written copy", scribble: "write messily (kid-friendly)" }),
-      mkRoot("spect", ["spect"], "to see / watch / observe", "bound", { inspect: "look at closely", respect: "to look up to", spectator: "a watcher" }),
-      mkRoot("struct", ["struct"], "to build", "bound", { construct: "build", destruct: "break down", instruct: "teach; tell how" }),
-      mkRoot("flect / flex", ["flect","flex"], "to bend or curve", "bound", { reflect: "bend back; think back", flexible: "can bend easily" }),
-      mkRoot("dict", ["dict"], "to say or tell", "bound", { predict: "say before", verdict: "final decision said" }),
-      mkRoot("fer", ["fer"], "to bear or carry / yield", "bound", { transfer: "carry across", prefer: "like more" }),
-      mkRoot("mit / miss", ["mit","miss"], "to send", "bound", { transmit: "send across", submit: "send under; turn in", dismiss: "send away" }),
-      mkRoot("duce / duct", ["duce","duct"], "to lead", "bound", { reduce: "lead back / make smaller", conduct: "lead; behave" }),
-      mkRoot("vers / vert", ["vers","vert"], "to turn", "bound", { convert: "turn into", reverse: "turn back", invert: "turn upside down" }),
-      mkRoot("fact / fect / fict", ["fact","fect","fict"], "to make or do", "bound", { manufacture: "make", effective: "works well", fiction: "made-up story" }),
-      mkRoot("tend / tens / tent", ["tend","tens","tent"], "to stretch or strain", "bound", { extend: "stretch out", tension: "tight pulling feeling" }),
-      mkRoot("ceipt / ceive / cept", ["ceipt","ceive","cept"], "to take or catch", "bound", { receive: "take in", accept: "take / agree to", intercept: "catch in between" }),
-      mkRoot("tain / ten / tin", ["tain","ten","tin"], "to hold", "bound", { contain: "hold inside", maintain: "keep holding / keep up" }),
+      mkLatin(1, ["in","re","de"], "form", ["form"], "to shape", "free", ["s","ed","ing","er","ation","al"]),
+      mkLatin(2, ["im","re","de"], "port", ["port"], "to carry", "free", ["s","ed","ing","er","ion","ation","able","al"]),
+      mkLatin(3, ["dis"], "rupt", ["rupt"], "to break or burst", "bound", ["s","ed","ing","e","er","tion","ible","ive"], { combos:[{prefix:"inter", root:"rupt", wordStarts:"inter"}] }),
+      mkLatin(4, ["dis","re","de","sub"], "tract", ["tract"], "to draw or pull", "bound", ["s","or","ion","able"]),
+      mkLatin(5, ["in","de","pre","sub"], "script", ["scrib","scribe","script"], "to write", "bound", ["s","ed","ing","er","ion"]),
+      mkLatin(6, ["in","re","sus"], "spect", ["spect","pect"], "to see/watch/observe", "bound", ["s","ed","ing","or","ion","able","ive"]),
+      mkLatin(7, ["in","de","con"], "struct", ["struct"], "to build", "bound", ["s","ed","ing","or","ion","ive"]),
+      mkLatin(8, ["in","re","de"], "flex", ["flex","flect"], "to bend/curve", "bound", ["es","ed","ing","or","ion","ive"]),
+      mkLatin(9, ["in","pre","inter"], "dict", ["dict"], "to say/tell", "bound", ["s","ed","ing","ion","able","ive"]),
+      mkLatin(10, ["in","re","de","pre","trans"], "fer", ["fer"], "to bear/yield", "bound", ["s","ed","ing","al","al"], { note:"Some words double consonants (e.g., referred)." }),
+      mkLatin(11, ["re","sub","trans","dis"], "mit", ["mit","miss"], "to send", "bound", ["s","ed","ing","er","able","ion"]),
+      mkLatin(12, ["in","de","re","pro","con"], "duce", ["duce","duct"], "to lead", "bound", ["s","ed","ing","ion","ive","t"], { note:"Some words use duct (conduct, product)." }),
+      mkLatin(13, ["in","re","sub","con"], "vert", ["vert","vers","verse"], "to turn", "bound", ["es","ed","ing","ion","ive"]),
+      mkLatin(14, ["in","de","per"], "fect", ["fact","fect","fict"], "to make/do", "bound", ["s","ed","ing","or","ion","ive","al"]),
+      mkLatin(15, ["in","dis","pre","con"], "tend", ["tend","tens","tent","tense"], "to stretch/strain", "bound", ["s","ed","ing","er","ion","ive"]),
+      mkLatin(16, ["de","re","con","per","inter","ex"], "ceive", ["ceive","ceit","cept","cept"], "to take/catch", "bound", ["s","ed","ing","er","ion","ive","able"]),
+      mkLatin(17, ["re","de","con","per","sus"], "tain", ["tain","ten","tin"], "to hold", "bound", ["s","ed","ing","er","able","ion"]),
+      mkLatin(18, ["im","dis","de","com","ex","pro"], "pose", ["pose","pound"], "to put/place", "bound", ["s","d","ing","er","ition","al"], { note:"Includes pound/pose family (compound, impound, expose, etc.)." }),
 
-      // Combo/other roots you listed:
-      mkRoot("phon / phono", ["phon","phono"], "sound", "bound", { telephone: "sound from far away", microphone: "small sound tool" }),
-      mkRoot("scope", ["scope"], "watch / see", "bound", { microscope: "tool to see small things", telescope: "tool to see far things" }),
-      mkRoot("photo", ["photo"], "light", "bound", { photograph: "picture made with light" }),
-      mkRoot("metro", ["metro"], "city or measure", "bound", { metropolis: "big city" }),
-      mkRoot("gram / graph", ["gram","graph"], "written or drawn", "bound", { autograph: "your written name", paragraph: "a block of writing" }),
-      mkRoot("dem / demo", ["dem","demo"], "people", "bound", { democracy: "rule by the people" }),
-      mkRoot("meter / metr", ["meter","metr"], "measure", "bound", { thermometer: "measure heat", perimeter: "measure around" }),
-      mkRoot("geo", ["geo"], "earth", "bound", { geology: "study of earth" }),
-      mkRoot("tele", ["tele"], "distant / far", "bound", { telescope: "see far away", telegraph: "send writing far away" }),
-      mkRoot("techn", ["techn"], "skill or art", "bound", { technology: "tools made from skill" }),
-      mkRoot("bio", ["bio"], "life", "bound", { biology: "study of life" }),
-      mkRoot("chron / chrono", ["chron","chrono"], "time", "bound", { chronological: "in time order" }),
-      mkRoot("micro", ["micro"], "small", "bound", { microscope: "tool to see small things", microbe: "tiny living thing" }),
-      mkRoot("psych", ["psych"], "mind or soul", "bound", { psychology: "study of the mind" }),
-      mkRoot("hydra / hydro", ["hydra","hydro"], "water", "bound", { hydrate: "add water", hydroelectric: "power from water" }),
-      mkRoot("auto", ["auto"], "self", "bound", { autograph: "self-written name", automatic: "works by itself" }),
-      mkRoot("therm / thermo", ["therm","thermo"], "heat / hot", "bound", { thermometer: "tool that measures heat" }),
-
-      // Endings you listed:
-      mkRoot("logy / ology", ["logy","ology"], "study of", "suffix", { geology: "study of earth", biology: "study of life" }),
-      mkRoot("cracy / crat", ["cracy","crat"], "government / ruler", "suffix", { democracy: "rule by the people", autocrat: "one ruler" }),
+      mkGreek(19, ["auto","bio","chrono","demo","geo","hydro","phono","photo","tele","thermo","autobio"], ["gram","graph"], "written/drawn", ["er","ic","ical","y"]),
+      mkGreek(20, ["bio","chrono","geo","hydro","graph","meter","phono","psych","techn","microbio"], ["logy","ology"], "study of", ["ic","ical","ist"]),
+      mkGreek(21, ["chrono","geo","hydro","micro","photo","tele","thermo","bio"], ["meter","metr","metry"], "measure", ["ic","y"]),
+      mkGreek(22, ["phono","geo","gram","hydro","micro","tele"], ["phon","phone","phoneme","phonic"], "sound", ["ic"]),
+      mkGreek(23, ["astro","bio","eco","geo","hemi","hydro","micro","photo","thermo"], ["sphere"], "circle", ["ic","ical"]),
+      mkGreek(24, ["auto","demo","techno"], ["cracy","crat"], "rule/government", ["ic"]),
+      mkGreek(25, ["bio","chrono","hydro","micro","phono","tele"], ["scope"], "watch/see", ["ic"])
     ];
 
-    // Build a matrix from a root list with defaults, but allow custom glossary + hinting
-    function mkRoot(id, variants, meaning, type, wordGlossary = null) {
+    function mkLatin(n, prefixes, rootLabel, rootForms, meaning, type, suffixes, extra={}){
       return {
-        id,
-        root: variants[0],
-        variants,
+        id: `matrix${n}`,
+        label: `Matrix ${n}`,
+        kind: "latin",
+        prefixes: [NONE, ...prefixes.map(P)],
+        rootLabel,
+        rootForms,
         rootMeaning: meaning,
-        rootType: type, // free | bound | suffix
-        prefixes: DEFAULT_PREFIXES,
-        suffixes: DEFAULT_SUFFIXES,
-        wordGlossary: wordGlossary || {}
+        rootType: type,
+        suffixes: [NONE, ...suffixes.map(S)],
+        extra
+      };
+    }
+    function mkGreek(n, leftForms, midForms, midMeaning, derivSuffixes){
+      return {
+        id: `matrix${n}`,
+        label: `Matrix ${n}`,
+        kind: "greek",
+        prefixes: [NONE, ...leftForms.map(P)],
+        rootLabel: midForms.join("/"),
+        rootForms: midForms, // treat as “middle form”
+        rootMeaning: midMeaning,
+        rootType: "Greek form",
+        suffixes: [NONE, ...derivSuffixes.map(S)]
       };
     }
 
-    // =========================
-    // UI STATE + RENDERING
-    // =========================
-    let currentMatrix = MATRICES[0];
-    let selectedPrefix = currentMatrix.prefixes[0];
-    let selectedSuffix = currentMatrix.suffixes[0];
+    // ------------------------------------------------------------
+    // REAL WORD LISTS (loaded from Word Key via localStorage)
+    // We store: { [matrixId]: ["word1","word2", ...] }
+    // ------------------------------------------------------------
+    const LS_KEY = "morpheme_matrix_wordkey_v1";
 
-    const el = (id) => document.getElementById(id);
-
-    function buildWord(prefixVal, rootVal, suffixVal) {
-      return `${prefixVal}${rootVal}${suffixVal}`.replace(/\s+/g, "");
+    function loadAllWordLists(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return {};
+        const obj = JSON.parse(raw);
+        if(!obj || typeof obj !== "object") return {};
+        // normalize lowercase
+        for(const k of Object.keys(obj)){
+          obj[k] = (obj[k] || []).map(w => String(w).trim()).filter(Boolean).map(w => w.toLowerCase());
+        }
+        return obj;
+      }catch{
+        return {};
+      }
+    }
+    function saveAllWordLists(obj){
+      localStorage.setItem(LS_KEY, JSON.stringify(obj));
     }
 
-    function computedWordMeaning(matrix, prefixObj, suffixObj) {
-      const finalWord = buildWord(prefixObj.value, matrix.root, suffixObj.value).toLowerCase();
-      if (matrix.wordGlossary && matrix.wordGlossary[finalWord]) return matrix.wordGlossary[finalWord];
+    // Starter real-word sets (small) so it works immediately.
+    // For full fidelity, paste each matrix list from the PDF Word Key into the loader. :contentReference[oaicite:4]{index=4}
+    const STARTER = {
+      matrix1: ["forms","formed","forming","former","formal","inform","reform","deform","information","informal","reformer"],
+      matrix2: ["ports","ported","porting","porter","portal","portable","import","report","deport","importation","deportation"],
+      matrix4: ["subtract","retract","distract","traction","tractor","tractable"],
+      matrix6: ["inspect","inspector","inspection","respect","suspect"],
+      matrix7: ["construct","construction","instruct","instruction","destruct","destruction"],
+      matrix19: ["photograph","photography","biography","telegraph","autograph"],
+      matrix20: ["biology","geology","hydrology","psychology","technology"],
+      matrix21: ["thermometer","geometry","telemetry","micrometer"],
+      matrix25: ["telescope","microscope","telescopic","microscopic"]
+    };
 
-      const p = prefixObj.value ? prefixObj.meaning : "";
+    function getWordLists(){
+      const stored = loadAllWordLists();
+      // merge starter where matrix has no stored list yet
+      for(const [k,v] of Object.entries(STARTER)){
+        if(!stored[k] || !stored[k].length) stored[k] = v.map(x=>x.toLowerCase());
+      }
+      return stored;
+    }
+
+    // ------------------------------------------------------------
+    // PARSING: derive (prefix, rootForm, suffix) for each word
+    // so we can filter options to "real words only".
+    // ------------------------------------------------------------
+
+    function longestMatchAtStart(word, candidates){
+      let best = "";
+      for(const c of candidates){
+        if(!c) continue;
+        if(word.startsWith(c.toLowerCase()) && c.length > best.length) best = c.toLowerCase();
+      }
+      return best;
+    }
+    function longestMatchAtEnd(word, candidates){
+      let best = "";
+      for(const c of candidates){
+        if(!c) continue;
+        if(word.endsWith(c.toLowerCase()) && c.length > best.length) best = c.toLowerCase();
+      }
+      return best;
+    }
+
+    function buildEntries(matrix, wordList){
+      // candidates (strings)
+      const prefCands = matrix.prefixes.map(p=>p.value).filter(Boolean);
+      const sufCands  = matrix.suffixes.map(s=>s.value).filter(Boolean);
+
+      // For Latin matrices, the root might be in the middle after stripping prefix/suffix.
+      // For Greek matrices, treat rootForms as the “middle form” (gram/graph/logy/etc.).
+      const rootCands = (matrix.rootForms || []).map(r=>String(r).toLowerCase());
+
+      const entries = [];
+
+      for(const raw of wordList){
+        const word = String(raw).trim().toLowerCase();
+        if(!word) continue;
+
+        // pick prefix + suffix (longest matches)
+        const pref = longestMatchAtStart(word, prefCands);
+        const suf  = longestMatchAtEnd(word, sufCands);
+
+        const mid = word.slice(pref.length, word.length - suf.length);
+
+        let rootMatch = "";
+        if(matrix.kind === "greek"){
+          // find which middle form appears inside the remainder (prefer longer)
+          rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid.includes(r)) || "";
+        } else {
+          // exact remainder should be (a) root form or (b) root form + small spelling tweak
+          rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid === r) || "";
+          if(!rootMatch){
+            // allow common silent-e patterns used in the Word Key (scribe/ceive/pose families)
+            rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid === r + "e") || "";
+            if(!rootMatch){
+              rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => (r.endsWith("e") && mid === r.slice(0,-1))) || "";
+            }
+          }
+        }
+
+        // If we can't confidently parse, still keep the word as “valid” for random selection,
+        // but it won't drive prefix/suffix filtering.
+        entries.push({ word, pref, suf, root: rootMatch, mid });
+      }
+
+      return entries;
+    }
+
+    // Very lightweight “meaning” generator (teacher-friendly, kid-friendly).
+    // You can optionally add a definition map later if you want.
+    function autoMeaning(matrix, pref, suf){
+      const p = pref ? (prefixMeaning[pref] || "prefix") : "";
       const r = matrix.rootMeaning;
-      const s = suffixObj.value ? suffixObj.meaning : "";
-
-      // Kid-friendly sentence stems
-      if (prefixObj.value && suffixObj.value) {
-        return `A word that means: ${p} + ${r}, and it shows ${s}.`;
-      }
-      if (prefixObj.value) {
-        return `A word that means: ${p} + ${r}.`;
-      }
-      if (suffixObj.value) {
-        return `A word that means: ${r}, and it shows ${s}.`;
-      }
-      return `This root means: ${r}.`;
+      const s = suf ? (suffixMeaning[suf] || "suffix") : "";
+      if(pref && suf) return `${p} + ${r} + (${s})`;
+      if(pref) return `${p} + ${r}`;
+      if(suf) return `${r} + (${s})`;
+      return r;
     }
 
-    function renderMatrixSelect() {
-      const sel = el("matrixSelect");
-      sel.innerHTML = "";
-      MATRICES.forEach((m, i) => {
+    // ------------------------------------------------------------
+    // UI
+    // ------------------------------------------------------------
+    const matrixSelect = document.getElementById("matrixSelect");
+    const prefixListEl = document.getElementById("prefixList");
+    const suffixListEl = document.getElementById("suffixList");
+    const prefCountEl  = document.getElementById("prefCount");
+    const sufCountEl   = document.getElementById("sufCount");
+
+    const rootTextEl   = document.getElementById("rootText");
+    const rootAltEl    = document.getElementById("rootAlt");
+    const rootMeaningEl= document.getElementById("rootMeaning");
+    const rootMetaEl   = document.getElementById("rootMeta");
+    const statusPillEl = document.getElementById("statusPill");
+
+    const wordSumEl    = document.getElementById("wordSum");
+    const partMeaningsEl = document.getElementById("partMeanings");
+    const finalWordEl  = document.getElementById("finalWord");
+    const finalMeaningEl = document.getElementById("finalMeaning");
+
+    const clearBtn = document.getElementById("clearBtn");
+    const randomBtn = document.getElementById("randomBtn");
+
+    // modal
+    const modalWrap = document.getElementById("modalWrap");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const saveMatrixBtn = document.getElementById("saveMatrixBtn");
+    const resetMatrixBtn = document.getElementById("resetMatrixBtn");
+    const wordListBox = document.getElementById("wordListBox");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalInfo = document.getElementById("modalInfo");
+
+    let current = MATRICES[0];
+    let chosenPrefix = "";
+    let chosenSuffix = "";
+
+    let wordLists = getWordLists();
+    let entries = buildEntries(current, wordLists[current.id] || []);
+
+    function setStatus(){
+      const stored = loadAllWordLists();
+      const hasFull = stored[current.id] && stored[current.id].length;
+      statusPillEl.innerHTML = hasFull
+        ? `<div class="ok">✅ Real-word list loaded for this matrix</div>`
+        : `<div class="warn">⭐ Using starter list (press Ctrl/Cmd+Shift+L to load full Word Key list)</div>`;
+    }
+
+    function renderMatrixSelect(){
+      matrixSelect.innerHTML = "";
+      MATRICES.forEach(m=>{
         const opt = document.createElement("option");
         opt.value = m.id;
-        const label = `${m.variants.join(", ")} — ${m.rootMeaning}`;
-        opt.textContent = label;
-        if (i === 0) opt.selected = true;
-        sel.appendChild(opt);
+        opt.textContent = m.label;
+        matrixSelect.appendChild(opt);
       });
     }
 
-    function chip(prefixOrSuffix, item, isActive) {
-      const d = document.createElement("div");
-      d.className = "chip" + (isActive ? " active" : "");
-      d.tabIndex = 0;
-      d.role = "button";
-      d.setAttribute("aria-pressed", String(isActive));
-      d.innerHTML = `<strong>${item.text}</strong><small>${item.meaning}</small>`;
+    function renderRoot(){
+      rootTextEl.textContent = current.rootLabel;
+      rootAltEl.textContent  = current.rootForms?.length ? `Forms: ${current.rootForms.join(", ")}` : "";
+      rootMeaningEl.textContent = current.rootMeaning;
+      rootMetaEl.textContent = `Type: ${current.rootType || ""}`;
+      setStatus();
+    }
 
-      const toggle = () => {
-        if (prefixOrSuffix === "prefix") {
-          selectedPrefix = (selectedPrefix === item) ? currentMatrix.prefixes[0] : item;
-        } else {
-          selectedSuffix = (selectedSuffix === item) ? currentMatrix.suffixes[0] : item;
+    function buildAllowedSuffixSetForPrefix(p){
+      // From parsed entries: suffixes that appear with this prefix in real words
+      const set = new Set();
+      entries.forEach(e=>{
+        if((e.pref || "") === (p || "")) set.add(e.suf || "");
+      });
+      // Always allow NONE
+      set.add("");
+      return set;
+    }
+
+    function buildAllowedPrefixSet(){
+      // prefixes that appear in real words
+      const set = new Set(entries.map(e => e.pref || ""));
+      set.add("");
+      return set;
+    }
+
+    function mkItem(obj, isActive, isDisabled){
+      const div = document.createElement("div");
+      div.className = "item" + (isActive ? " active" : "") + (isDisabled ? " disabled" : "");
+      div.innerHTML = `<strong>${obj.text}</strong><span>${obj.meaning}</span>`;
+      return div;
+    }
+
+    function renderLists(){
+      prefixListEl.innerHTML = "";
+      suffixListEl.innerHTML = "";
+
+      const allowedPrefixes = buildAllowedPrefixSet();
+      const allowedSuffixes = buildAllowedSuffixSetForPrefix(chosenPrefix);
+
+      // prefixes
+      let prefEnabledCount = 0;
+      current.prefixes.forEach(p=>{
+        const disabled = !allowedPrefixes.has(p.value);
+        if(!disabled) prefEnabledCount++;
+        const div = mkItem(p, p.value === chosenPrefix, disabled);
+        if(!disabled){
+          div.addEventListener("click", ()=>{
+            chosenPrefix = (chosenPrefix === p.value) ? "" : p.value;
+            // if current suffix becomes invalid, clear it
+            const allowed = buildAllowedSuffixSetForPrefix(chosenPrefix);
+            if(!allowed.has(chosenSuffix)) chosenSuffix = "";
+            renderAll();
+          });
         }
-        renderAll();
-      };
-
-      d.addEventListener("click", toggle);
-      d.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        prefixListEl.appendChild(div);
       });
-      return d;
+
+      // suffixes
+      let sufEnabledCount = 0;
+      current.suffixes.forEach(s=>{
+        const disabled = !allowedSuffixes.has(s.value);
+        if(!disabled) sufEnabledCount++;
+        const div = mkItem(s, s.value === chosenSuffix, disabled);
+        if(!disabled){
+          div.addEventListener("click", ()=>{
+            chosenSuffix = (chosenSuffix === s.value) ? "" : s.value;
+            renderAll();
+          });
+        }
+        suffixListEl.appendChild(div);
+      });
+
+      prefCountEl.textContent = `${prefEnabledCount} options`;
+      sufCountEl.textContent  = `${sufEnabledCount} options`;
     }
 
-    function renderStrips() {
-      const pStrip = el("prefixStrip");
-      const sStrip = el("suffixStrip");
-      pStrip.innerHTML = "";
-      sStrip.innerHTML = "";
-      currentMatrix.prefixes.forEach((p) => pStrip.appendChild(chip("prefix", p, p === selectedPrefix)));
-      currentMatrix.suffixes.forEach((s) => sStrip.appendChild(chip("suffix", s, s === selectedSuffix)));
+    function findExactWord(){
+      const hit = entries.find(e => (e.pref || "") === chosenPrefix && (e.suf || "") === chosenSuffix);
+      return hit ? hit.word : "";
     }
 
-    function renderRoot() {
-      el("rootText").textContent = currentMatrix.root;
-      el("rootAlts").textContent =
-        (currentMatrix.variants && currentMatrix.variants.length > 1)
-          ? `Also seen as: ${currentMatrix.variants.slice(1).join(", ")}`
-          : "";
-      el("rootMeaning").textContent = currentMatrix.rootMeaning;
-      el("rootType").textContent = currentMatrix.rootType ? `Type: ${currentMatrix.rootType}` : "";
+    function renderOutputs(){
+      const sum = [chosenPrefix || null, current.rootLabel, chosenSuffix || null].filter(Boolean).join(" + ");
+      wordSumEl.textContent = sum || current.rootLabel;
 
-      // A tiny hint line for kids
-      const examples =
-        Object.keys(currentMatrix.wordGlossary || {}).slice(0, 3);
-      el("rootHint").textContent =
-        examples.length
-          ? `Examples you might know: ${examples.join(", ")}`
-          : "Try making words—then see if you recognize a real one!";
+      const parts = [];
+      if(chosenPrefix) parts.push(`(${chosenPrefix}-) ${prefixMeaning[chosenPrefix] || "prefix"}`);
+      parts.push(`${current.rootLabel} = ${current.rootMeaning}`);
+      if(chosenSuffix) parts.push(`(-${chosenSuffix}) ${suffixMeaning[chosenSuffix] || "suffix"}`);
+      partMeaningsEl.textContent = parts.join(" • ");
+
+      const word = findExactWord();
+      if(word){
+        finalWordEl.textContent = word;
+        finalMeaningEl.textContent = autoMeaning(current, chosenPrefix, chosenSuffix);
+      } else {
+        finalWordEl.textContent = "—";
+        finalMeaningEl.textContent = "Choose parts to build a real word.";
+      }
     }
 
-    function renderOutputs() {
-      const sumParts = [
-        selectedPrefix.value ? selectedPrefix.text : null,
-        currentMatrix.root,
-        selectedSuffix.value ? selectedSuffix.text : null
-      ].filter(Boolean);
-
-      el("wordSum").textContent = sumParts.join(" + ") || currentMatrix.root;
-
-      const finalWord = buildWord(selectedPrefix.value, currentMatrix.root, selectedSuffix.value);
-      el("wordFinal").textContent = finalWord || currentMatrix.root;
-
-      const partMeaningLine = [
-        selectedPrefix.value ? `(${selectedPrefix.text}-) ${selectedPrefix.meaning}` : null,
-        `${currentMatrix.root} = ${currentMatrix.rootMeaning}`,
-        selectedSuffix.value ? `(-${selectedSuffix.text}) ${selectedSuffix.meaning}` : null
-      ].filter(Boolean).join(" • ");
-
-      el("partMeanings").textContent = partMeaningLine || `${currentMatrix.root} = ${currentMatrix.rootMeaning}`;
-
-      const wm = computedWordMeaning(currentMatrix, selectedPrefix, selectedSuffix);
-      el("wordMeaning").textContent = wm;
-
-      const finalKey = (finalWord || currentMatrix.root).toLowerCase();
-      const hasGloss = currentMatrix.wordGlossary && currentMatrix.wordGlossary[finalKey];
-      el("noteLine").textContent = hasGloss ? "Using glossary definition ✨" : "Using generated meaning (teacher can override).";
-    }
-
-    function scrollStrip(which, dir) {
-      const strip = which === "prefix" ? el("prefixStrip") : el("suffixStrip");
-      strip.scrollBy({ left: dir * 240, behavior: "smooth" });
-    }
-
-    function setMatrixById(id) {
-      currentMatrix = MATRICES.find(m => m.id === id) || MATRICES[0];
-      selectedPrefix = currentMatrix.prefixes[0];
-      selectedSuffix = currentMatrix.suffixes[0];
-      renderAll();
-    }
-
-    function randomPick() {
-      const p = currentMatrix.prefixes[Math.floor(Math.random() * currentMatrix.prefixes.length)];
-      const s = currentMatrix.suffixes[Math.floor(Math.random() * currentMatrix.suffixes.length)];
-      selectedPrefix = p;
-      selectedSuffix = s;
-      renderAll();
-    }
-
-    function clearPick() {
-      selectedPrefix = currentMatrix.prefixes[0];
-      selectedSuffix = currentMatrix.suffixes[0];
-      renderAll();
-    }
-
-    function renderAll() {
+    function renderAll(){
       renderRoot();
-      renderStrips();
+      renderLists();
       renderOutputs();
     }
 
-    // INIT
-    renderMatrixSelect();
-    setMatrixById(MATRICES[0].id);
+    function setCurrentMatrix(id){
+      current = MATRICES.find(m=>m.id===id) || MATRICES[0];
+      chosenPrefix = "";
+      chosenSuffix = "";
+      wordLists = getWordLists();
+      entries = buildEntries(current, wordLists[current.id] || []);
+      renderAll();
+    }
 
-    el("matrixSelect").addEventListener("change", (e) => setMatrixById(e.target.value));
-    el("prefLeft").addEventListener("click", () => scrollStrip("prefix", -1));
-    el("prefRight").addEventListener("click", () => scrollStrip("prefix", 1));
-    el("sufLeft").addEventListener("click", () => scrollStrip("suffix", -1));
-    el("sufRight").addEventListener("click", () => scrollStrip("suffix", 1));
-    el("randomBtn").addEventListener("click", randomPick);
-    el("clearBtn").addEventListener("click", clearPick);
+    // Buttons
+    clearBtn.addEventListener("click", ()=>{
+      chosenPrefix = "";
+      chosenSuffix = "";
+      renderAll();
+    });
+
+    randomBtn.addEventListener("click", ()=>{
+      const pool = entries.filter(e => (e.pref || "") !== undefined);
+      if(!pool.length) return;
+      // Prefer entries that can actually be clicked into (prefix/suffix known)
+      const clickable = pool.filter(e => e.pref !== undefined && e.suf !== undefined);
+      const pick = (clickable.length ? clickable : pool)[Math.floor(Math.random() * (clickable.length ? clickable.length : pool.length))];
+      chosenPrefix = pick.pref || "";
+      chosenSuffix = pick.suf || "";
+      renderAll();
+    });
+
+    matrixSelect.addEventListener("change", ()=> setCurrentMatrix(matrixSelect.value));
+
+    // ------------------------------------------------------------
+    // Hidden loader modal (Ctrl/Cmd + Shift + L)
+    // ------------------------------------------------------------
+    function openModal(){
+      modalWrap.style.display = "flex";
+      modalWrap.setAttribute("aria-hidden","false");
+
+      const stored = loadAllWordLists();
+      const existing = stored[current.id] || [];
+      modalTitle.textContent = `Load Word Key list — ${current.label}`;
+      modalInfo.textContent = existing.length ? `Currently saved: ${existing.length} words` : `No saved list yet (starter list is being used).`;
+
+      // Show existing list if present; else blank.
+      wordListBox.value = existing.length ? existing.join(", ") : "";
+      wordListBox.focus();
+    }
+    function closeModal(){
+      modalWrap.style.display = "none";
+      modalWrap.setAttribute("aria-hidden","true");
+      wordListBox.value = "";
+    }
+
+    closeModalBtn.addEventListener("click", closeModal);
+    modalWrap.addEventListener("click", (e)=>{ if(e.target === modalWrap) closeModal(); });
+
+    saveMatrixBtn.addEventListener("click", ()=>{
+      const text = wordListBox.value || "";
+      const words = text
+        .split(",")
+        .map(w => w.trim())
+        .filter(Boolean)
+        .map(w => w.toLowerCase());
+
+      const stored = loadAllWordLists();
+      stored[current.id] = words;
+      saveAllWordLists(stored);
+
+      // refresh
+      wordLists = getWordLists();
+      entries = buildEntries(current, wordLists[current.id] || []);
+      closeModal();
+      renderAll();
+    });
+
+    resetMatrixBtn.addEventListener("click", ()=>{
+      const stored = loadAllWordLists();
+      delete stored[current.id];
+      saveAllWordLists(stored);
+
+      wordLists = getWordLists();
+      entries = buildEntries(current, wordLists[current.id] || []);
+      closeModal();
+      renderAll();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      const key = e.key.toLowerCase();
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      // Ctrl/Cmd + Shift + L opens loader
+      if(ctrlOrCmd && e.shiftKey && key === "l"){
+        e.preventDefault();
+        openModal();
+      }
+      // Esc closes modal
+      if(key === "escape" && modalWrap.style.display === "flex"){
+        closeModal();
+      }
+    });
+
+    // Init
+    renderMatrixSelect();
+    setCurrentMatrix(MATRICES[0].id);
+    matrixSelect.value = MATRICES[0].id;
   </script>
 </body>
 </html>
