@@ -188,7 +188,6 @@ index.html
       line-height: 1.35;
     }
 
-    /* Lists: always readable (no hidden chips) */
     .list{
       height: 240px;
       overflow:auto;
@@ -216,11 +215,6 @@ index.html
       border-color: rgba(255,79,182,.70);
       box-shadow: 0 0 0 4px rgba(255,79,182,.16);
       background: rgba(255,79,182,.08);
-    }
-    .item.disabled{
-      opacity:.45;
-      cursor:not-allowed;
-      filter: grayscale(.2);
     }
 
     .outputs{
@@ -257,34 +251,31 @@ index.html
       font-weight: 900;
       line-height: 1.4;
     }
-    .ok{
+    .bubble{
       display:inline-flex;
       align-items:center;
       gap:8px;
       font-weight:1100;
-      color: #0e3b1f;
-      background: rgba(46,204,113,.18);
-      border: 2px solid rgba(46,204,113,.35);
       padding: 6px 10px;
       border-radius: 999px;
       font-size: 12px;
       margin-top: 10px;
+      border: 2px solid rgba(19,35,63,.12);
+      background: rgba(255,255,255,.65);
+      color: var(--muted);
     }
-    .warn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-weight:1100;
-      color: #5d2a00;
-      background: rgba(255,159,28,.18);
-      border: 2px solid rgba(255,159,28,.35);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin-top: 10px;
+    .bad{
+      border-color: rgba(255,79,182,.35);
+      background: rgba(255,79,182,.12);
+      color: #5e143b;
+    }
+    .good{
+      border-color: rgba(46,204,113,.35);
+      background: rgba(46,204,113,.16);
+      color: #0e3b1f;
     }
 
-    /* Hidden teacher loader modal (not visible unless opened with shortcut) */
+    /* Hidden Word Key loader modal (NOT visible unless shortcut is used) */
     .modalWrap{
       position: fixed;
       inset: 0;
@@ -338,15 +329,15 @@ index.html
 <body>
   <header>
     <h1>Morpheme Matrix Builder</h1>
-    <p class="subtitle">Pick a root/base. Then click a prefix and suffix to build a <b>real word</b>.</p>
+    <p class="subtitle">Pick a root/base, then click a prefix and suffix. If it’s not in the real-word list, you’ll see “not a real word combo.”</p>
   </header>
 
   <main>
     <div class="app" role="application" aria-label="Morpheme Matrix Builder">
       <div class="topbar">
         <div class="control">
-          <label for="matrixSelect">Matrix:</label>
-          <select id="matrixSelect" aria-label="Choose a matrix"></select>
+          <label for="matrixSelect">Root/Base:</label>
+          <select id="matrixSelect" aria-label="Choose a root or base"></select>
         </div>
         <div class="control">
           <button id="clearBtn" class="ghost" aria-label="Clear prefix and suffix">Clear</button>
@@ -361,7 +352,7 @@ index.html
             <span class="pill" id="prefCount">0 options</span>
           </div>
           <div class="list" id="prefixList" tabindex="0" aria-label="Prefix list"></div>
-          <div class="tiny">Tip: click again to turn a selection off.</div>
+          <div class="tiny">Click again to turn a selection off.</div>
         </section>
 
         <section class="rootCard" aria-label="Root or base">
@@ -369,7 +360,7 @@ index.html
           <div class="rootAlt" id="rootAlt"></div>
           <div class="rootMeaning" id="rootMeaning">—</div>
           <div class="tiny" id="rootMeta"></div>
-          <div id="statusPill"></div>
+          <div id="statusBubble"></div>
         </section>
 
         <section class="pane" aria-label="Suffixes">
@@ -378,7 +369,7 @@ index.html
             <span class="pill" id="sufCount">0 options</span>
           </div>
           <div class="list" id="suffixList" tabindex="0" aria-label="Suffix list"></div>
-          <div class="tiny">Suffix choices update so words stay real.</div>
+          <div class="tiny">Pick any suffix — some combos won’t be real words (and that’s okay!).</div>
         </section>
       </div>
 
@@ -392,140 +383,123 @@ index.html
         <div class="outCard" aria-label="Word and meaning">
           <div class="outLabel">WORD + MEANING</div>
           <div class="outValue" id="finalWord">—</div>
-          <div class="meaning" id="finalMeaning">Choose parts to build a real word.</div>
+          <div class="meaning" id="finalMeaning">Choose parts to build a word.</div>
+          <div id="comboBubble"></div>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Hidden teacher loader (Ctrl/Cmd + Shift + L) -->
+  <!-- Hidden Word Key Loader (Ctrl/Cmd + Shift + L) -->
   <div class="modalWrap" id="modalWrap" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Load real word list">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Load Word Key list">
       <div class="modalTop">
         <strong id="modalTitle">Load Word Key list</strong>
         <button id="closeModalBtn" class="ghost">Close</button>
       </div>
       <div class="modalBody">
         <div class="tiny">
-          Paste the comma-separated word list for this matrix from the PDF Word Key.
-          (Example format: <b>forms, formed, forming, former</b> …)
+          Paste the comma-separated “Word Key” list for this root/base from the PDF.
+          Example: <b>forms, formed, forming, former</b>…
         </div>
         <textarea id="wordListBox" placeholder="Paste words here..."></textarea>
         <div class="modalRow">
           <div class="tiny" id="modalInfo"></div>
           <div class="control">
-            <button id="resetMatrixBtn" class="ghost">Reset this matrix</button>
+            <button id="resetMatrixBtn" class="ghost">Reset this root</button>
             <button id="saveMatrixBtn" class="primary">Save</button>
           </div>
         </div>
         <div class="tiny" style="margin-top:10px;">
-          Stored on this device/browser only (local storage).
+          Saved on this device/browser only (local storage).
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ------------------------------------------------------------
-    // DATA: Matrix structure (prefixes/roots/suffixes) from the PDF
-    // The "real words" list is loaded from the Word Key via the
-    // hidden loader (Ctrl/Cmd+Shift+L). :contentReference[oaicite:2]{index=2}
-    //
-    // IMPORTANT: This file includes a SMALL starter real-word set so
-    // it works immediately. For full fidelity, paste each matrix’s
-    // Word Key list into the loader.
-    // ------------------------------------------------------------
+    // ============================================================
+    // MATRIX SETUP
+    // ============================================================
+    const NONE = { text:"—", value:"", meaning:"(none)" };
 
-    const NONE = { text:"—", meaning:"(none)", value:"" };
-
-    // quick meanings (kid-friendly)
     const prefixMeaning = {
-      "in":"in/into/toward", "im":"in/into/toward",
-      "un":"not/opposite", "mis":"bad/wrong", "dis":"not/apart",
-      "re":"again/back", "de":"down/away", "pre":"before",
-      "en":"put into/on", "em":"put into/on", "sub":"under/below",
-      "inter":"between", "con":"together", "com":"together",
-      "pro":"forward", "per":"through", "ex":"out",
-      "at":"toward", "re-":"again/back", "e":"out"
+      "in":"in/into", "im":"in/into", "un":"not", "mis":"wrong/bad", "dis":"not/apart",
+      "re":"again/back", "de":"down/away", "pre":"before", "sub":"under",
+      "inter":"between", "con":"together", "com":"together", "pro":"forward",
+      "per":"through", "ex":"out", "sus":"under", "at":"toward", "e":"out",
+      "tele":"far", "micro":"small", "photo":"light", "geo":"earth", "bio":"life",
+      "demo":"people", "hydro":"water", "thermo":"heat", "chrono":"time",
+      "psycho":"mind", "techno":"skill/art"
     };
+
     const suffixMeaning = {
-      "s":"plural / verb -s", "es":"plural / verb -es",
-      "ed":"past tense", "ing":"happening now",
-      "er":"a person/thing", "or":"a person/thing",
-      "ion":"act/state", "sion":"act/state", "tion":"act/state", "ation":"act/state",
-      "able":"can be", "ible":"can be",
-      "al":"relating to", "ial":"relating to",
-      "y":"noun/subject word", "ive":"relating to",
-      "ic":"relating to", "ical":"relating to",
+      "s":"plural / verb -s", "es":"plural", "ed":"past tense", "ing":"happening now",
+      "er":"person/thing", "or":"person/thing", "ion":"act/state", "tion":"act/state",
+      "ation":"act/state", "al":"relating to", "ive":"relating to",
+      "able":"can be", "ible":"can be", "y":"noun ending", "ic":"relating to", "ical":"relating to",
       "ist":"one who"
     };
 
     function P(p){ return { text:p, value:p, meaning: prefixMeaning[p] || "prefix" }; }
     function S(s){ return { text:s, value:s, meaning: suffixMeaning[s] || "suffix" }; }
 
-    // Matrices 1–18 are Latin-root matrices; 19–25 are Greek-form matrices. :contentReference[oaicite:3]{index=3}
+    // Keep these as your base list (you can add more matrices later).
+    // Real words come from the Word Key list you paste in (hidden loader). 
     const MATRICES = [
-      mkLatin(1, ["in","re","de"], "form", ["form"], "to shape", "free", ["s","ed","ing","er","ation","al"]),
-      mkLatin(2, ["im","re","de"], "port", ["port"], "to carry", "free", ["s","ed","ing","er","ion","ation","able","al"]),
-      mkLatin(3, ["dis"], "rupt", ["rupt"], "to break or burst", "bound", ["s","ed","ing","e","er","tion","ible","ive"], { combos:[{prefix:"inter", root:"rupt", wordStarts:"inter"}] }),
-      mkLatin(4, ["dis","re","de","sub"], "tract", ["tract"], "to draw or pull", "bound", ["s","or","ion","able"]),
-      mkLatin(5, ["in","de","pre","sub"], "script", ["scrib","scribe","script"], "to write", "bound", ["s","ed","ing","er","ion"]),
-      mkLatin(6, ["in","re","sus"], "spect", ["spect","pect"], "to see/watch/observe", "bound", ["s","ed","ing","or","ion","able","ive"]),
-      mkLatin(7, ["in","de","con"], "struct", ["struct"], "to build", "bound", ["s","ed","ing","or","ion","ive"]),
-      mkLatin(8, ["in","re","de"], "flex", ["flex","flect"], "to bend/curve", "bound", ["es","ed","ing","or","ion","ive"]),
-      mkLatin(9, ["in","pre","inter"], "dict", ["dict"], "to say/tell", "bound", ["s","ed","ing","ion","able","ive"]),
-      mkLatin(10, ["in","re","de","pre","trans"], "fer", ["fer"], "to bear/yield", "bound", ["s","ed","ing","al","al"], { note:"Some words double consonants (e.g., referred)." }),
-      mkLatin(11, ["re","sub","trans","dis"], "mit", ["mit","miss"], "to send", "bound", ["s","ed","ing","er","able","ion"]),
-      mkLatin(12, ["in","de","re","pro","con"], "duce", ["duce","duct"], "to lead", "bound", ["s","ed","ing","ion","ive","t"], { note:"Some words use duct (conduct, product)." }),
-      mkLatin(13, ["in","re","sub","con"], "vert", ["vert","vers","verse"], "to turn", "bound", ["es","ed","ing","ion","ive"]),
-      mkLatin(14, ["in","de","per"], "fect", ["fact","fect","fict"], "to make/do", "bound", ["s","ed","ing","or","ion","ive","al"]),
-      mkLatin(15, ["in","dis","pre","con"], "tend", ["tend","tens","tent","tense"], "to stretch/strain", "bound", ["s","ed","ing","er","ion","ive"]),
-      mkLatin(16, ["de","re","con","per","inter","ex"], "ceive", ["ceive","ceit","cept","cept"], "to take/catch", "bound", ["s","ed","ing","er","ion","ive","able"]),
-      mkLatin(17, ["re","de","con","per","sus"], "tain", ["tain","ten","tin"], "to hold", "bound", ["s","ed","ing","er","able","ion"]),
-      mkLatin(18, ["im","dis","de","com","ex","pro"], "pose", ["pose","pound"], "to put/place", "bound", ["s","d","ing","er","ition","al"], { note:"Includes pound/pose family (compound, impound, expose, etc.)." }),
+      mkLatin("form", ["in","re","de"], ["form"], "to shape", ["s","ed","ing","er","ation","al"]),
+      mkLatin("port", ["im","re","de","trans"], ["port"], "to carry", ["s","ed","ing","er","ion","ation","able","al"]),
+      mkLatin("rupt", ["dis","e","inter"], ["rupt"], "to break or burst", ["s","ed","ing","ion","ive","ible"]),
+      mkLatin("tract", ["dis","re","sub","at"], ["tract"], "to draw or pull", ["s","or","ion","able"]),
+      mkLatin("script", ["de","pre","sub","tran"], ["scrib","scribe","script"], "to write", ["s","ed","ing","ion"]),
+      mkLatin("spect", ["in","re","sus"], ["spect","pect"], "to see/watch/observe", ["or","ion","ive"]),
+      mkLatin("struct", ["con","in","de"], ["struct"], "to build", ["or","ion"]),
+      mkLatin("flex", ["re","de","in"], ["flex","flect"], "to bend/curve", ["ible","ion","ive"]),
+      mkLatin("dict", ["pre","in","inter"], ["dict"], "to say/tell", ["ion","ive"]),
+      mkLatin("fer", ["pre","re","in","trans"], ["fer"], "to carry/bear", ["s","ed","al"]),
+      mkLatin("mit", ["sub","trans","dis","re"], ["mit","miss"], "to send", ["s","ed","ion","able"]),
+      mkLatin("duce", ["re","in","pro","de","con"], ["duce","duct"], "to lead", ["s","ion","t"]),
+      mkLatin("vert", ["con","in","re","sub"], ["vert","vers","verse"], "to turn", ["ed","ion","ive"]),
+      mkLatin("fect", ["per","de","in","ef"], ["fact","fect","fict"], "to make/do", ["ion","ive","al"]),
+      mkLatin("tend", ["in","pre","con"], ["tend","tens","tent"], "to stretch/strain", ["ion","ive"]),
+      mkLatin("ceive", ["re","de","per","inter","con","ex"], ["ceive","ceit","cept"], "to take/catch", ["ed","ing","ion"]),
+      mkLatin("tain", ["con","re","de","sus"], ["tain","ten","tin"], "to hold", ["ed","ing","er"]),
 
-      mkGreek(19, ["auto","bio","chrono","demo","geo","hydro","phono","photo","tele","thermo","autobio"], ["gram","graph"], "written/drawn", ["er","ic","ical","y"]),
-      mkGreek(20, ["bio","chrono","geo","hydro","graph","meter","phono","psych","techn","microbio"], ["logy","ology"], "study of", ["ic","ical","ist"]),
-      mkGreek(21, ["chrono","geo","hydro","micro","photo","tele","thermo","bio"], ["meter","metr","metry"], "measure", ["ic","y"]),
-      mkGreek(22, ["phono","geo","gram","hydro","micro","tele"], ["phon","phone","phoneme","phonic"], "sound", ["ic"]),
-      mkGreek(23, ["astro","bio","eco","geo","hemi","hydro","micro","photo","thermo"], ["sphere"], "circle", ["ic","ical"]),
-      mkGreek(24, ["auto","demo","techno"], ["cracy","crat"], "rule/government", ["ic"]),
-      mkGreek(25, ["bio","chrono","hydro","micro","phono","tele"], ["scope"], "watch/see", ["ic"])
+      mkGreek("graph/gram", ["photo","tele","bio","auto","geo","demo"], ["graph","gram"], "written/drawn", ["y","ic"]),
+      mkGreek("logy/ology", ["bio","geo","hydro","psycho","techno"], ["logy","ology"], "study of", ["ical","ist"]),
+      mkGreek("meter/metr", ["thermo","geo","tele","micro"], ["meter","metr","metry"], "measure", ["y","ic"]),
+      mkGreek("phon/phono", ["tele","micro"], ["phone","phon","phono"], "sound", ["ic"]),
+      mkGreek("cracy/crat", ["demo","auto"], ["cracy","crat"], "rule/government", ["ic"]),
+      mkGreek("scope", ["tele","micro"], ["scope"], "watch/see", ["ic"])
     ];
 
-    function mkLatin(n, prefixes, rootLabel, rootForms, meaning, type, suffixes, extra={}){
+    function mkLatin(rootLabel, prefixes, rootForms, meaning, suffixes){
       return {
-        id: `matrix${n}`,
-        label: `Matrix ${n}`,
-        kind: "latin",
-        prefixes: [NONE, ...prefixes.map(P)],
+        id: `root_${rootLabel}`,
         rootLabel,
         rootForms,
         rootMeaning: meaning,
-        rootType: type,
-        suffixes: [NONE, ...suffixes.map(S)],
-        extra
+        kind: "latin",
+        prefixes: [NONE, ...prefixes.map(P)],
+        suffixes: [NONE, ...suffixes.map(S)]
       };
     }
-    function mkGreek(n, leftForms, midForms, midMeaning, derivSuffixes){
+    function mkGreek(rootLabel, leftForms, midForms, meaning, derivSuffixes){
       return {
-        id: `matrix${n}`,
-        label: `Matrix ${n}`,
+        id: `root_${rootLabel.replaceAll("/","_")}`,
+        rootLabel,
+        rootForms: midForms,
+        rootMeaning: meaning,
         kind: "greek",
         prefixes: [NONE, ...leftForms.map(P)],
-        rootLabel: midForms.join("/"),
-        rootForms: midForms, // treat as “middle form”
-        rootMeaning: midMeaning,
-        rootType: "Greek form",
         suffixes: [NONE, ...derivSuffixes.map(S)]
       };
     }
 
-    // ------------------------------------------------------------
-    // REAL WORD LISTS (loaded from Word Key via localStorage)
-    // We store: { [matrixId]: ["word1","word2", ...] }
-    // ------------------------------------------------------------
-    const LS_KEY = "morpheme_matrix_wordkey_v1";
+    // ============================================================
+    // WORD KEY STORAGE (hidden loader)
+    // ============================================================
+    const LS_KEY = "morpheme_matrix_wordkey_v2";
 
     function loadAllWordLists(){
       try{
@@ -533,7 +507,6 @@ index.html
         if(!raw) return {};
         const obj = JSON.parse(raw);
         if(!obj || typeof obj !== "object") return {};
-        // normalize lowercase
         for(const k of Object.keys(obj)){
           obj[k] = (obj[k] || []).map(w => String(w).trim()).filter(Boolean).map(w => w.toLowerCase());
         }
@@ -546,111 +519,96 @@ index.html
       localStorage.setItem(LS_KEY, JSON.stringify(obj));
     }
 
-    // Starter real-word sets (small) so it works immediately.
-    // For full fidelity, paste each matrix list from the PDF Word Key into the loader. :contentReference[oaicite:4]{index=4}
+    // A small starter set so it works immediately (you can overwrite via loader)
     const STARTER = {
-      matrix1: ["forms","formed","forming","former","formal","inform","reform","deform","information","informal","reformer"],
-      matrix2: ["ports","ported","porting","porter","portal","portable","import","report","deport","importation","deportation"],
-      matrix4: ["subtract","retract","distract","traction","tractor","tractable"],
-      matrix6: ["inspect","inspector","inspection","respect","suspect"],
-      matrix7: ["construct","construction","instruct","instruction","destruct","destruction"],
-      matrix19: ["photograph","photography","biography","telegraph","autograph"],
-      matrix20: ["biology","geology","hydrology","psychology","technology"],
-      matrix21: ["thermometer","geometry","telemetry","micrometer"],
-      matrix25: ["telescope","microscope","telescopic","microscopic"]
+      root_form: ["forms","formed","forming","former","formal","inform","reform","deform","information","informal","reformation"],
+      root_port: ["import","report","deport","transport","portable","importation","deportation"],
+      root_tract: ["attract","retract","distract","subtract","traction","distraction"],
+      root_spect: ["inspect","inspection","inspector","respect","suspect"],
+      root_struct: ["construct","construction","instruct","instruction","destruct","destruction"],
+      root_graph_gram: ["photograph","photography","telegraph","biography","geography","demography","autograph"],
+      root_logy_ology: ["biology","geology","hydrology","psychology","technology"],
+      root_meter_metr: ["thermometer","geometry","telemetry","micrometer"],
+      root_scope: ["telescope","microscope","telescopic","microscopic"]
     };
 
     function getWordLists(){
       const stored = loadAllWordLists();
-      // merge starter where matrix has no stored list yet
       for(const [k,v] of Object.entries(STARTER)){
         if(!stored[k] || !stored[k].length) stored[k] = v.map(x=>x.toLowerCase());
       }
       return stored;
     }
 
-    // ------------------------------------------------------------
-    // PARSING: derive (prefix, rootForm, suffix) for each word
-    // so we can filter options to "real words only".
-    // ------------------------------------------------------------
+    // ============================================================
+    // PARSING: build (prefix, rootForm, suffix) combos from Word Key list
+    // ============================================================
+    function normalize(s){ return String(s || "").toLowerCase(); }
 
-    function longestMatchAtStart(word, candidates){
-      let best = "";
-      for(const c of candidates){
-        if(!c) continue;
-        if(word.startsWith(c.toLowerCase()) && c.length > best.length) best = c.toLowerCase();
-      }
-      return best;
-    }
-    function longestMatchAtEnd(word, candidates){
-      let best = "";
-      for(const c of candidates){
-        if(!c) continue;
-        if(word.endsWith(c.toLowerCase()) && c.length > best.length) best = c.toLowerCase();
-      }
-      return best;
-    }
+    function parseWordToCombo(word, matrix){
+      const w = normalize(word);
 
-    function buildEntries(matrix, wordList){
-      // candidates (strings)
-      const prefCands = matrix.prefixes.map(p=>p.value).filter(Boolean);
-      const sufCands  = matrix.suffixes.map(s=>s.value).filter(Boolean);
+      const prefCands = matrix.prefixes.map(p=>p.value).map(normalize);
+      const sufCands  = matrix.suffixes.map(s=>s.value).map(normalize);
+      const rootCands = (matrix.rootForms || []).map(normalize);
 
-      // For Latin matrices, the root might be in the middle after stripping prefix/suffix.
-      // For Greek matrices, treat rootForms as the “middle form” (gram/graph/logy/etc.).
-      const rootCands = (matrix.rootForms || []).map(r=>String(r).toLowerCase());
+      // Try all (prefix, suffix, root) combos (safe + accurate enough for classroom sets)
+      // Handles common e-drop/e-add patterns (pose/ceive/scribe families).
+      let best = null;
 
-      const entries = [];
+      for(const p of prefCands){
+        if(p && !w.startsWith(p)) continue;
+        const afterP = w.slice(p.length);
 
-      for(const raw of wordList){
-        const word = String(raw).trim().toLowerCase();
-        if(!word) continue;
+        for(const s of sufCands){
+          if(s && !afterP.endsWith(s)) continue;
+          const mid = afterP.slice(0, afterP.length - s.length);
 
-        // pick prefix + suffix (longest matches)
-        const pref = longestMatchAtStart(word, prefCands);
-        const suf  = longestMatchAtEnd(word, sufCands);
+          for(const r of rootCands){
+            if(!r) continue;
 
-        const mid = word.slice(pref.length, word.length - suf.length);
+            // exact
+            if(mid === r) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
+            // e-add
+            if(mid === r + "e") best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
+            // e-drop
+            if(r.endsWith("e") && mid === r.slice(0,-1)) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
 
-        let rootMatch = "";
-        if(matrix.kind === "greek"){
-          // find which middle form appears inside the remainder (prefer longer)
-          rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid.includes(r)) || "";
-        } else {
-          // exact remainder should be (a) root form or (b) root form + small spelling tweak
-          rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid === r) || "";
-          if(!rootMatch){
-            // allow common silent-e patterns used in the Word Key (scribe/ceive/pose families)
-            rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => mid === r + "e") || "";
-            if(!rootMatch){
-              rootMatch = rootCands.sort((a,b)=>b.length-a.length).find(r => (r.endsWith("e") && mid === r.slice(0,-1))) || "";
-            }
+            // Greek-ish: allow root form appearing inside mid (for things like geometry)
+            if(matrix.kind === "greek" && mid.includes(r)) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
           }
         }
-
-        // If we can't confidently parse, still keep the word as “valid” for random selection,
-        // but it won't drive prefix/suffix filtering.
-        entries.push({ word, pref, suf, root: rootMatch, mid });
       }
 
-      return entries;
+      return best; // may be null if we can’t parse (we ignore those)
     }
 
-    // Very lightweight “meaning” generator (teacher-friendly, kid-friendly).
-    // You can optionally add a definition map later if you want.
-    function autoMeaning(matrix, pref, suf){
-      const p = pref ? (prefixMeaning[pref] || "prefix") : "";
-      const r = matrix.rootMeaning;
-      const s = suf ? (suffixMeaning[suf] || "suffix") : "";
-      if(pref && suf) return `${p} + ${r} + (${s})`;
-      if(pref) return `${p} + ${r}`;
-      if(suf) return `${r} + (${s})`;
-      return r;
+    function pickBetter(a, b){
+      if(!a) return b;
+      // prefer longer root match, then longer prefix+suffix
+      const score = (x) => (x.root?.length||0)*10 + (x.pref?.length||0) + (x.suf?.length||0);
+      return score(b) > score(a) ? b : a;
     }
 
-    // ------------------------------------------------------------
+    function buildCombos(matrix, wordList){
+      const combos = [];
+      const wordSet = new Set();
+
+      for(const w of wordList){
+        const word = normalize(w);
+        if(!word) continue;
+        wordSet.add(word);
+
+        const combo = parseWordToCombo(word, matrix);
+        if(combo) combos.push(combo);
+      }
+
+      return { combos, wordSet };
+    }
+
+    // ============================================================
     // UI
-    // ------------------------------------------------------------
+    // ============================================================
     const matrixSelect = document.getElementById("matrixSelect");
     const prefixListEl = document.getElementById("prefixList");
     const suffixListEl = document.getElementById("suffixList");
@@ -661,17 +619,18 @@ index.html
     const rootAltEl    = document.getElementById("rootAlt");
     const rootMeaningEl= document.getElementById("rootMeaning");
     const rootMetaEl   = document.getElementById("rootMeta");
-    const statusPillEl = document.getElementById("statusPill");
+    const statusBubble = document.getElementById("statusBubble");
 
     const wordSumEl    = document.getElementById("wordSum");
     const partMeaningsEl = document.getElementById("partMeanings");
     const finalWordEl  = document.getElementById("finalWord");
     const finalMeaningEl = document.getElementById("finalMeaning");
+    const comboBubbleEl = document.getElementById("comboBubble");
 
     const clearBtn = document.getElementById("clearBtn");
     const randomBtn = document.getElementById("randomBtn");
 
-    // modal
+    // Hidden loader modal
     const modalWrap = document.getElementById("modalWrap");
     const closeModalBtn = document.getElementById("closeModalBtn");
     const saveMatrixBtn = document.getElementById("saveMatrixBtn");
@@ -680,60 +639,63 @@ index.html
     const modalTitle = document.getElementById("modalTitle");
     const modalInfo = document.getElementById("modalInfo");
 
+    let wordLists = getWordLists();
+
     let current = MATRICES[0];
     let chosenPrefix = "";
     let chosenSuffix = "";
 
-    let wordLists = getWordLists();
-    let entries = buildEntries(current, wordLists[current.id] || []);
-
-    function setStatus(){
-      const stored = loadAllWordLists();
-      const hasFull = stored[current.id] && stored[current.id].length;
-      statusPillEl.innerHTML = hasFull
-        ? `<div class="ok">✅ Real-word list loaded for this matrix</div>`
-        : `<div class="warn">⭐ Using starter list (press Ctrl/Cmd+Shift+L to load full Word Key list)</div>`;
-    }
+    let comboData = buildCombos(current, wordLists[current.id] || []);
 
     function renderMatrixSelect(){
       matrixSelect.innerHTML = "";
       MATRICES.forEach(m=>{
         const opt = document.createElement("option");
         opt.value = m.id;
-        opt.textContent = m.label;
+        // Show root/base instead of “Matrix #”
+        opt.textContent = `${m.rootLabel} — ${m.rootMeaning}`;
         matrixSelect.appendChild(opt);
       });
     }
 
+    function setStatus(){
+      const stored = loadAllWordLists();
+      const hasLoaded = stored[current.id] && stored[current.id].length;
+      statusBubble.innerHTML = hasLoaded
+        ? `<div class="bubble good">✅ Real-word list loaded</div>`
+        : `<div class="bubble">⭐ Using starter list (Ctrl/Cmd + Shift + L to load Word Key list)</div>`;
+    }
+
+    function rootFormsLine(){
+      const forms = (current.rootForms || []);
+      if(!forms.length) return "";
+      if(forms.length === 1) return `Form: ${forms[0]}`;
+      return `Forms: ${forms.join(", ")}`;
+    }
+
     function renderRoot(){
       rootTextEl.textContent = current.rootLabel;
-      rootAltEl.textContent  = current.rootForms?.length ? `Forms: ${current.rootForms.join(", ")}` : "";
+      rootAltEl.textContent  = rootFormsLine();
       rootMeaningEl.textContent = current.rootMeaning;
-      rootMetaEl.textContent = `Type: ${current.rootType || ""}`;
+      rootMetaEl.textContent = current.kind === "greek" ? "Type: Greek form" : "Type: Root/base";
       setStatus();
     }
 
-    function buildAllowedSuffixSetForPrefix(p){
-      // From parsed entries: suffixes that appear with this prefix in real words
-      const set = new Set();
-      entries.forEach(e=>{
-        if((e.pref || "") === (p || "")) set.add(e.suf || "");
-      });
-      // Always allow NONE
+    // For your rule: only show affixes that COULD make a real word for this base (individually).
+    function allowedPrefixSet(){
+      const set = new Set(comboData.combos.map(c => c.pref || ""));
+      set.add("");
+      return set;
+    }
+    function allowedSuffixSet(){
+      const set = new Set(comboData.combos.map(c => c.suf || ""));
       set.add("");
       return set;
     }
 
-    function buildAllowedPrefixSet(){
-      // prefixes that appear in real words
-      const set = new Set(entries.map(e => e.pref || ""));
-      set.add("");
-      return set;
-    }
-
-    function mkItem(obj, isActive, isDisabled){
+    function mkItem(obj, isActive){
       const div = document.createElement("div");
-      div.className = "item" + (isActive ? " active" : "") + (isDisabled ? " disabled" : "");
+      div.className = "item" + (isActive ? " active" : "");
       div.innerHTML = `<strong>${obj.text}</strong><span>${obj.meaning}</span>`;
       return div;
     }
@@ -742,68 +704,81 @@ index.html
       prefixListEl.innerHTML = "";
       suffixListEl.innerHTML = "";
 
-      const allowedPrefixes = buildAllowedPrefixSet();
-      const allowedSuffixes = buildAllowedSuffixSetForPrefix(chosenPrefix);
+      const pAllowed = allowedPrefixSet();
+      const sAllowed = allowedSuffixSet();
 
-      // prefixes
-      let prefEnabledCount = 0;
-      current.prefixes.forEach(p=>{
-        const disabled = !allowedPrefixes.has(p.value);
-        if(!disabled) prefEnabledCount++;
-        const div = mkItem(p, p.value === chosenPrefix, disabled);
-        if(!disabled){
-          div.addEventListener("click", ()=>{
-            chosenPrefix = (chosenPrefix === p.value) ? "" : p.value;
-            // if current suffix becomes invalid, clear it
-            const allowed = buildAllowedSuffixSetForPrefix(chosenPrefix);
-            if(!allowed.has(chosenSuffix)) chosenSuffix = "";
-            renderAll();
-          });
-        }
+      const prefixes = current.prefixes.filter(p => pAllowed.has(p.value));
+      const suffixes = current.suffixes.filter(s => sAllowed.has(s.value));
+
+      prefixes.forEach(p=>{
+        const div = mkItem(p, p.value === chosenPrefix);
+        div.addEventListener("click", ()=>{
+          chosenPrefix = (chosenPrefix === p.value) ? "" : p.value;
+          renderAll();
+        });
         prefixListEl.appendChild(div);
       });
 
-      // suffixes
-      let sufEnabledCount = 0;
-      current.suffixes.forEach(s=>{
-        const disabled = !allowedSuffixes.has(s.value);
-        if(!disabled) sufEnabledCount++;
-        const div = mkItem(s, s.value === chosenSuffix, disabled);
-        if(!disabled){
-          div.addEventListener("click", ()=>{
-            chosenSuffix = (chosenSuffix === s.value) ? "" : s.value;
-            renderAll();
-          });
-        }
+      suffixes.forEach(s=>{
+        const div = mkItem(s, s.value === chosenSuffix);
+        div.addEventListener("click", ()=>{
+          chosenSuffix = (chosenSuffix === s.value) ? "" : s.value;
+          renderAll();
+        });
         suffixListEl.appendChild(div);
       });
 
-      prefCountEl.textContent = `${prefEnabledCount} options`;
-      sufCountEl.textContent  = `${sufEnabledCount} options`;
+      prefCountEl.textContent = `${prefixes.length} options`;
+      sufCountEl.textContent  = `${suffixes.length} options`;
     }
 
-    function findExactWord(){
-      const hit = entries.find(e => (e.pref || "") === chosenPrefix && (e.suf || "") === chosenSuffix);
-      return hit ? hit.word : "";
+    function wordSum(){
+      const parts = [];
+      if(chosenPrefix) parts.push(chosenPrefix);
+      parts.push(current.rootLabel);
+      if(chosenSuffix) parts.push(chosenSuffix);
+      return parts.join(" + ");
     }
 
-    function renderOutputs(){
-      const sum = [chosenPrefix || null, current.rootLabel, chosenSuffix || null].filter(Boolean).join(" + ");
-      wordSumEl.textContent = sum || current.rootLabel;
-
+    function partMeanings(){
       const parts = [];
       if(chosenPrefix) parts.push(`(${chosenPrefix}-) ${prefixMeaning[chosenPrefix] || "prefix"}`);
       parts.push(`${current.rootLabel} = ${current.rootMeaning}`);
       if(chosenSuffix) parts.push(`(-${chosenSuffix}) ${suffixMeaning[chosenSuffix] || "suffix"}`);
-      partMeaningsEl.textContent = parts.join(" • ");
+      return parts.join(" • ");
+    }
 
-      const word = findExactWord();
-      if(word){
-        finalWordEl.textContent = word;
-        finalMeaningEl.textContent = autoMeaning(current, chosenPrefix, chosenSuffix);
+    function findRealWord(){
+      // Find a combo in parsed combos that exactly matches chosen prefix+suffix
+      const hit = comboData.combos.find(c => (c.pref||"") === chosenPrefix && (c.suf||"") === chosenSuffix);
+      return hit ? hit.word : "";
+    }
+
+    function renderOutputs(){
+      wordSumEl.textContent = wordSum();
+      partMeaningsEl.textContent = partMeanings();
+
+      const real = findRealWord();
+
+      if(real){
+        finalWordEl.textContent = real;
+        finalMeaningEl.textContent = "Real word ✅ (from the Word Key list)";
+        comboBubbleEl.innerHTML = `<div class="bubble good">✅ Real word combo</div>`;
       } else {
+        // If either is unselected, give a gentle prompt. If both selected, show your requested message.
         finalWordEl.textContent = "—";
-        finalMeaningEl.textContent = "Choose parts to build a real word.";
+        if(chosenPrefix || chosenSuffix){
+          if(chosenPrefix && chosenSuffix){
+            finalMeaningEl.textContent = "Not a real word combo (for this matrix). Try a different prefix or suffix!";
+            comboBubbleEl.innerHTML = `<div class="bubble bad">🚫 Not a real word combo</div>`;
+          } else {
+            finalMeaningEl.textContent = "Pick one more part to test your combo.";
+            comboBubbleEl.innerHTML = `<div class="bubble">✨ Keep building!</div>`;
+          }
+        } else {
+          finalMeaningEl.textContent = "Choose parts to build a word.";
+          comboBubbleEl.innerHTML = `<div class="bubble">✨ Start with a prefix or suffix</div>`;
+        }
       }
     }
 
@@ -818,7 +793,7 @@ index.html
       chosenPrefix = "";
       chosenSuffix = "";
       wordLists = getWordLists();
-      entries = buildEntries(current, wordLists[current.id] || []);
+      comboData = buildCombos(current, wordLists[current.id] || []);
       renderAll();
     }
 
@@ -830,11 +805,9 @@ index.html
     });
 
     randomBtn.addEventListener("click", ()=>{
-      const pool = entries.filter(e => (e.pref || "") !== undefined);
+      const pool = comboData.combos;
       if(!pool.length) return;
-      // Prefer entries that can actually be clicked into (prefix/suffix known)
-      const clickable = pool.filter(e => e.pref !== undefined && e.suf !== undefined);
-      const pick = (clickable.length ? clickable : pool)[Math.floor(Math.random() * (clickable.length ? clickable.length : pool.length))];
+      const pick = pool[Math.floor(Math.random() * pool.length)];
       chosenPrefix = pick.pref || "";
       chosenSuffix = pick.suf || "";
       renderAll();
@@ -842,19 +815,18 @@ index.html
 
     matrixSelect.addEventListener("change", ()=> setCurrentMatrix(matrixSelect.value));
 
-    // ------------------------------------------------------------
-    // Hidden loader modal (Ctrl/Cmd + Shift + L)
-    // ------------------------------------------------------------
+    // ============================================================
+    // Hidden Loader: Ctrl/Cmd + Shift + L
+    // ============================================================
     function openModal(){
       modalWrap.style.display = "flex";
       modalWrap.setAttribute("aria-hidden","false");
 
       const stored = loadAllWordLists();
       const existing = stored[current.id] || [];
-      modalTitle.textContent = `Load Word Key list — ${current.label}`;
+      modalTitle.textContent = `Load Word Key list — ${current.rootLabel}`;
       modalInfo.textContent = existing.length ? `Currently saved: ${existing.length} words` : `No saved list yet (starter list is being used).`;
 
-      // Show existing list if present; else blank.
       wordListBox.value = existing.length ? existing.join(", ") : "";
       wordListBox.focus();
     }
@@ -879,9 +851,8 @@ index.html
       stored[current.id] = words;
       saveAllWordLists(stored);
 
-      // refresh
       wordLists = getWordLists();
-      entries = buildEntries(current, wordLists[current.id] || []);
+      comboData = buildCombos(current, wordLists[current.id] || []);
       closeModal();
       renderAll();
     });
@@ -892,7 +863,7 @@ index.html
       saveAllWordLists(stored);
 
       wordLists = getWordLists();
-      entries = buildEntries(current, wordLists[current.id] || []);
+      comboData = buildCombos(current, wordLists[current.id] || []);
       closeModal();
       renderAll();
     });
@@ -902,12 +873,10 @@ index.html
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-      // Ctrl/Cmd + Shift + L opens loader
       if(ctrlOrCmd && e.shiftKey && key === "l"){
         e.preventDefault();
         openModal();
       }
-      // Esc closes modal
       if(key === "escape" && modalWrap.style.display === "flex"){
         closeModal();
       }
