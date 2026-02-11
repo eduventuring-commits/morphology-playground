@@ -221,12 +221,6 @@ index.html
 </main>
 
 <script>
-/* =========================================================
-   MORPHEME LISTS
-   These per-matrix parts are taken from the PDF’s matrix pages.
-   Latin matrices 1–18 and Greek matrices 19–25.
-   ========================================================= */
-
 const NONE = { text:"—", value:"", meaning:"(none)" };
 
 function part(text, meaning=""){
@@ -235,7 +229,7 @@ function part(text, meaning=""){
 }
 
 const MEAN = {
-  // Common prefixes (chart)
+  // Common prefixes
   in: "in, into, or toward",
   im: "in, into, or toward",
   un: "not or opposite of",
@@ -248,8 +242,6 @@ const MEAN = {
   em: "put into or onto",
   sub: "below or under",
   inter: "between",
-
-  // Extra prefixes shown inside specific matrices
   con: "together",
   com: "together",
   pro: "forward",
@@ -259,7 +251,7 @@ const MEAN = {
   ex: "out",
   e: "out",
 
-  // Common suffix meanings (simple, kid-friendly)
+  // Common suffix meanings
   "s": "plural noun / singular verb",
   "s/es": "plural noun / singular verb",
   "es": "plural noun / singular verb",
@@ -278,12 +270,10 @@ const MEAN = {
   "able, ible": "can be",
   "al": "relating to",
   "ive": "causing/making",
-
-  // Greek suffixes in matrices
   "ic": "relating to",
   "ical": "relating to",
   "ist": "one who",
-  "y": "subject/science",
+  "y": "subject or science",
   "eme": "unit"
 };
 
@@ -291,395 +281,179 @@ function withMeanings(list){
   return [NONE, ...list.map(x => part(x, MEAN[x] || ""))];
 }
 
-const MATRICES = [
-  // LATIN 1–18 (each list exactly as shown on matrix pages)
-  {
-    id:"latin_01_form",
-    label:"Latin 1: form (to shape)",
-    family:"Latin",
-    base:"form",
-    baseMeaning:"to shape",
-    baseType:"free",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+// --- Base matrix templates (some have center with multiple options)
+const BASE_MATRICES = [
+  // Latin (unchanged)
+  { id:"latin_01_form", label:"Latin 1: form (to shape)", family:"Latin", base:"form", baseMeaning:"to shape", baseType:"free",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","re","de"]),
     right: withMeanings(["s","ed","ing","er","ation","al"])
   },
-  {
-    id:"latin_02_port",
-    label:"Latin 2: port (to carry)",
-    family:"Latin",
-    base:"port",
-    baseMeaning:"to carry",
-    baseType:"free",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_02_port", label:"Latin 2: port (to carry)", family:"Latin", base:"port", baseMeaning:"to carry", baseType:"free",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["im","re","de"]),
     right: withMeanings(["s","ed","ing","er","ion, ation","able","al"])
   },
-  {
-    id:"latin_03_rupt",
-    label:"Latin 3: rupt (to break or burst)",
-    family:"Latin",
-    base:"rupt",
-    baseMeaning:"to break or burst",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_03_rupt", label:"Latin 3: rupt (to break or burst)", family:"Latin", base:"rupt", baseMeaning:"to break or burst", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["dis","inter","e"]),
     right: withMeanings(["s","ed","ing","er","tion","ible","ive"])
   },
-  {
-    id:"latin_04_tract",
-    label:"Latin 4: tract (to draw or pull)",
-    family:"Latin",
-    base:"tract",
-    baseMeaning:"to draw or pull",
-    baseType:"free",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_04_tract", label:"Latin 4: tract (to draw or pull)", family:"Latin", base:"tract", baseMeaning:"to draw or pull", baseType:"free",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["dis","re","de","sub"]),
     right: withMeanings(["s","ed","ing","or","ion","able, ible"])
   },
-  {
-    id:"latin_05_scrib_script",
-    label:"Latin 5: scrib / script (to write)",
-    family:"Latin",
-    base:"scrib",
-    baseMeaning:"to write",
-    baseType:"bound & free (script is free*)",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_05_scrib_script", label:"Latin 5: scrib / script (to write)", family:"Latin", base:"scrib", baseMeaning:"to write", baseType:"bound & free (script is free*)",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","de","pre","sub"]),
     right: withMeanings(["s","ed","ing","er","ion","able"])
   },
-  {
-    id:"latin_06_spect",
-    label:"Latin 6: spect (to see, watch, observe)",
-    family:"Latin",
-    base:"spect",
-    baseMeaning:"to see, watch, or observe",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_06_spect", label:"Latin 6: spect (to see, watch, observe)", family:"Latin", base:"spect", baseMeaning:"to see, watch, or observe", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","re","sus"]),
     right: withMeanings(["s","ed","ing","er","or","ion","able","ive"])
   },
-  {
-    id:"latin_07_struct",
-    label:"Latin 7: struct (to build)",
-    family:"Latin",
-    base:"struct",
-    baseMeaning:"to build",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_07_struct", label:"Latin 7: struct (to build)", family:"Latin", base:"struct", baseMeaning:"to build", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","de","con"]),
     right: withMeanings(["s","ed","ing","or","ion","ive"])
   },
-  {
-    id:"latin_08_flect_flex",
-    label:"Latin 8: flect / flex (to bend or curve)",
-    family:"Latin",
-    base:"flect",
-    baseMeaning:"to bend or curve",
-    baseType:"bound & free (flex is free*)",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_08_flect_flex", label:"Latin 8: flect / flex (to bend or curve)", family:"Latin", base:"flect", baseMeaning:"to bend or curve", baseType:"bound & free (flex is free*)",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","re","de"]),
     right: withMeanings(["s/es","ed","ing","or","ion","ive"])
   },
-  {
-    id:"latin_09_dict",
-    label:"Latin 9: dict (to say or tell)",
-    family:"Latin",
-    base:"dict",
-    baseMeaning:"to say or tell",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_09_dict", label:"Latin 9: dict (to say or tell)", family:"Latin", base:"dict", baseMeaning:"to say or tell", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","pre","inter"]),
     right: withMeanings(["s","ed","ing","ion","able","ive"])
   },
-  {
-    id:"latin_10_fer",
-    label:"Latin 10: fer (to bear or yield)",
-    family:"Latin",
-    base:"fer",
-    baseMeaning:"to bear or yield",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_10_fer", label:"Latin 10: fer (to bear or yield)", family:"Latin", base:"fer", baseMeaning:"to bear or yield", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","re","de","pre","trans"]),
     right: withMeanings(["s","ed","ing","able","al"])
   },
-  {
-    id:"latin_11_mit_miss",
-    label:"Latin 11: mit / miss (to send)",
-    family:"Latin",
-    base:"mit",
-    baseMeaning:"to send",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_11_mit_miss", label:"Latin 11: mit / miss (to send)", family:"Latin", base:"mit", baseMeaning:"to send", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["dis","re","sub","trans"]),
     right: withMeanings(["s/es","ed","ing","er","ion","ible","al"])
   },
-  {
-    id:"latin_12_duce_duct",
-    label:"Latin 12: duce / duct (to lead)",
-    family:"Latin",
-    base:"duce",
-    baseMeaning:"to lead",
-    baseType:"bound & free (duct is free*)",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_12_duce_duct", label:"Latin 12: duce / duct (to lead)", family:"Latin", base:"duce", baseMeaning:"to lead", baseType:"bound & free (duct is free*)",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","de","re","con","pro"]),
     right: withMeanings(["s","ed","ing","or","ion","ible","ive"])
   },
-  {
-    id:"latin_13_vers_vert",
-    label:"Latin 13: vers / vert (to turn)",
-    family:"Latin",
-    base:"vers",
-    baseMeaning:"to turn",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_13_vers_vert", label:"Latin 13: vers / vert (to turn)", family:"Latin", base:"vers", baseMeaning:"to turn", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","re","sub","con"]),
     right: withMeanings(["s","ed","ing","ion","ive"])
   },
-  {
-    id:"latin_14_fact_fect_fict",
-    label:"Latin 14: fact / fect / fict (to make or do)",
-    family:"Latin",
-    base:"fact",
-    baseMeaning:"to make or do",
-    baseType:"bound & free (fact is free*)",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_14_fact_fect_fict", label:"Latin 14: fact / fect / fict (to make or do)", family:"Latin", base:"fact", baseMeaning:"to make or do", baseType:"bound & free (fact is free*)",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","de","per"]),
     right: withMeanings(["s","ed","ing","or","ion","al","ive"])
   },
-  {
-    id:"latin_15_tend_tent_tens",
-    label:"Latin 15: tend / tent / tens (to stretch or strain)",
-    family:"Latin",
-    base:"tend",
-    baseMeaning:"to stretch or strain",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_15_tend_tent_tens", label:"Latin 15: tend / tent / tens (to stretch or strain)", family:"Latin", base:"tend", baseMeaning:"to stretch or strain", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["in","dis","pre","con"]),
     right: withMeanings(["s","ed","ing","er","ion","ive"])
   },
-  {
-    id:"latin_16_ceipt_ceive_cept",
-    label:"Latin 16: ceit / ceive / cept (to take or catch)",
-    family:"Latin",
-    base:"cept",
-    baseMeaning:"to take or catch",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_16_ceipt_ceive_cept", label:"Latin 16: ceit / ceive / cept (to take or catch)", family:"Latin", base:"cept", baseMeaning:"to take or catch", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["de","re","inter","con","per","ex"]),
     right: withMeanings(["s","ed","ing","er","or","ion","able","ive"])
   },
-  {
-    id:"latin_17_tain_ten_tin",
-    label:"Latin 17: tain / ten / tin (to hold)",
-    family:"Latin",
-    base:"tain",
-    baseMeaning:"to hold",
-    baseType:"bound",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_17_tain_ten_tin", label:"Latin 17: tain / ten / tin (to hold)", family:"Latin", base:"tain", baseMeaning:"to hold", baseType:"bound",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["re","de","con","per","sus"]),
     right: withMeanings(["s","ed","ing","er","able","tion"])
   },
-  {
-    id:"latin_18_pos_pound",
-    label:"Latin 18: pos / pound (to put in place or set)",
-    family:"Latin",
-    base:"pos",
-    baseMeaning:"to put in place or set",
-    baseType:"bound & free (pound is free*)",
-    leftTitle:"Prefixes",
-    rightTitle:"Suffixes",
+  { id:"latin_18_pos_pound", label:"Latin 18: pos / pound (to put in place or set)", family:"Latin", base:"pos", baseMeaning:"to put in place or set", baseType:"bound & free (pound is free*)",
+    leftTitle:"Prefixes", rightTitle:"Suffixes",
     left: withMeanings(["im","dis","de","com","ex","pro"]),
     right: withMeanings(["s","ed","ing","er","or","tion","al"])
   },
 
-  // GREEK 19–25 (left forms + middle form + suffixes exactly as shown)
-  {
-    id:"greek_19_gram_graph",
-    label:"Greek 19: gram/graph (written or drawn)",
-    family:"Greek",
-    base:"gram / graph",
-    baseMeaning:"written or drawn",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
+  // Greek templates with multi-center bases (we will SPLIT these)
+  { id:"greek_19_gram_graph", label:"Greek 19: gram/graph (written or drawn)", family:"Greek", base:"gram / graph", baseMeaning:"written or drawn", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
     left: [NONE,
-      part("auto","self"),
-      part("bio","life"),
-      part("chrono","time"),
-      part("demo","people"),
-      part("geo","earth"),
-      part("hydro","water"),
-      part("phono","sound"),
-      part("photo","light"),
-      part("tele","distant"),
-      part("thermo","heat"),
-      part("autobio","self + life")
+      part("auto","self"), part("bio","life"), part("chrono","time"), part("demo","people"),
+      part("geo","earth"), part("hydro","water"), part("phono","sound"), part("photo","light"),
+      part("tele","distant"), part("thermo","heat"), part("autobio","self + life")
     ],
-    right: [NONE,
-      part("er","one who"),
-      part("ic","relating to"),
-      part("ical","relating to"),
-      part("y","subject or science")
-    ]
+    right: [NONE, part("er","one who"), part("ic","relating to"), part("ical","relating to"), part("y","subject or science")]
   },
-  {
-    id:"greek_20_logy_ology",
-    label:"Greek 20: logy/ology (study of)",
-    family:"Greek",
-    base:"logy / ology",
-    baseMeaning:"study of",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
+  { id:"greek_20_logy_ology", label:"Greek 20: logy/ology (study of)", family:"Greek", base:"logy / ology", baseMeaning:"study of", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
     left: [NONE,
-      part("bio","life"),
-      part("chrono","time"),
-      part("geo","earth"),
-      part("hydro","water"),
-      part("graph","written"),
-      part("meter","measure"),
-      part("phono","sound"),
-      part("psych","mind"),
-      part("techn","skill"),
-      part("microbio","small + life")
+      part("bio","life"), part("chrono","time"), part("geo","earth"), part("hydro","water"),
+      part("graph","written"), part("meter","measure"), part("phono","sound"), part("psych","mind"),
+      part("techn","skill"), part("microbio","small + life")
     ],
-    right: [NONE,
-      part("ic","relating to"),
-      part("ical","relating to"),
-      part("ist","one who")
-    ]
+    right: [NONE, part("ic","relating to"), part("ical","relating to"), part("ist","one who")]
   },
-  {
-    id:"greek_21_meter_metr",
-    label:"Greek 21: meter/metr (measure)",
-    family:"Greek",
-    base:"meter / metr",
-    baseMeaning:"measure",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
+  { id:"greek_21_meter_metr", label:"Greek 21: meter/metr (measure)", family:"Greek", base:"meter / metr", baseMeaning:"measure", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
     left: [NONE,
-      part("bio","life"),
-      part("chrono","time"),
-      part("geo","earth"),
-      part("hydro","water"),
-      part("micro","small"),
-      part("photo","light"),
-      part("sphero","circle"),
-      part("tele","distant"),
-      part("thermo","heat")
+      part("bio","life"), part("chrono","time"), part("geo","earth"), part("hydro","water"),
+      part("micro","small"), part("photo","light"), part("sphero","circle"), part("tele","distant"), part("thermo","heat")
     ],
-    right: [NONE,
-      part("ic","relating to"),
-      part("y","subject or science")
-    ]
+    right: [NONE, part("ic","relating to"), part("y","subject or science")]
   },
-  {
-    id:"greek_22_phone_phon",
-    label:"Greek 22: phone/phon (sound)",
-    family:"Greek",
-    base:"phone / phon",
-    baseMeaning:"sound",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Right Parts",
-    left: [NONE,
-      part("geo","earth"),
-      part("gramo","written"),
-      part("hydro","water"),
-      part("micro","small"),
-      part("tele","distant")
-    ],
-    right: [NONE,
-      part("eme","unit"),
-      part("ic","relating to")
-    ]
+  { id:"greek_22_phone_phon", label:"Greek 22: phone/phon (sound)", family:"Greek", base:"phone / phon", baseMeaning:"sound", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Right Parts",
+    left: [NONE, part("geo","earth"), part("gramo","written"), part("hydro","water"), part("micro","small"), part("tele","distant")],
+    right: [NONE, part("eme","unit"), part("ic","relating to")]
   },
-  {
-    id:"greek_23_sphere",
-    label:"Greek 23: sphere (circle)",
-    family:"Greek",
-    base:"sphere",
-    baseMeaning:"circle",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
+  { id:"greek_23_sphere", label:"Greek 23: sphere (circle)", family:"Greek", base:"sphere", baseMeaning:"circle", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
     left: [NONE,
-      part("astro","star"),
-      part("bio","life"),
-      part("eco","house"),
-      part("geo","earth"),
-      part("hemi","half"),
-      part("hydro","water"),
-      part("micro","small"),
-      part("photo","light"),
-      part("thermo","heat")
+      part("astro","star"), part("bio","life"), part("eco","house"), part("geo","earth"),
+      part("hemi","half"), part("hydro","water"), part("micro","small"), part("photo","light"), part("thermo","heat")
     ],
     right: [NONE, part("ic","relating to")]
   },
-  {
-    id:"greek_24_cracy_crat",
-    label:"Greek 24: cracy/crat (rule)",
-    family:"Greek",
-    base:"cracy / crat",
-    baseMeaning:"rule",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
-    left: [NONE,
-      part("auto","self"),
-      part("demo","people"),
-      part("techno","skill")
-    ],
+  { id:"greek_24_cracy_crat", label:"Greek 24: cracy/crat (rule)", family:"Greek", base:"cracy / crat", baseMeaning:"rule", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
+    left: [NONE, part("auto","self"), part("demo","people"), part("techno","skill")],
     right: [NONE, part("ic","relating to")]
   },
-  {
-    id:"greek_25_scope",
-    label:"Greek 25: scope (watch or see)",
-    family:"Greek",
-    base:"scope",
-    baseMeaning:"watch or see",
-    baseType:"middle form",
-    leftTitle:"Left Forms",
-    rightTitle:"Suffixes",
+  { id:"greek_25_scope", label:"Greek 25: scope (watch or see)", family:"Greek", base:"scope", baseMeaning:"watch or see", baseType:"middle form",
+    leftTitle:"Left Forms", rightTitle:"Suffixes",
     left: [NONE,
-      part("bio","life"),
-      part("chrono","time"),
-      part("hydro","water"),
-      part("micro","small"),
-      part("phono","sound"),
-      part("photo","light"),
-      part("tele","distant"),
-      part("thermo","heat")
+      part("bio","life"), part("chrono","time"), part("hydro","water"), part("micro","small"),
+      part("phono","sound"), part("photo","light"), part("tele","distant"), part("thermo","heat")
     ],
     right: [NONE, part("ic","relating to")]
   }
 ];
 
-/* =========================================================
-   DEFINITIONS
-   - If found in dictionary API: show real definition
-   - If not found: generate a plausible “fake word” definition
-   ========================================================= */
+// --- Split any matrix whose base contains " / " into separate matrices
+function splitMultiCenterMatrices(list){
+  const out = [];
+  for(const m of list){
+    if(typeof m.base === "string" && m.base.includes("/")){
+      const parts = m.base.split("/").map(s => s.trim()).filter(Boolean);
+      for(const center of parts){
+        out.push({
+          ...m,
+          id: `${m.id}__${center}`,
+          base: center,
+          label: m.label.replace(m.base, center) // nicer dropdown label
+        });
+      }
+    } else {
+      out.push(m);
+    }
+  }
+  return out;
+}
 
+const MATRICES = splitMultiCenterMatrices(BASE_MATRICES);
+
+/* ===== Definitions (real if found, otherwise “possible”) ===== */
 function norm(s){ return String(s||"").toLowerCase().trim(); }
 
 async function fetchDefinition(word){
@@ -707,9 +481,7 @@ function generatedDefinition(leftMeaning, baseMeaning, rightMeaning){
   return `Possible meaning (if it were a word): something related to “${core}.”`;
 }
 
-/* =========================================================
-   UI
-   ========================================================= */
+/* ===== UI ===== */
 const matrixSelect = document.getElementById("matrixSelect");
 const leftListEl = document.getElementById("leftList");
 const rightListEl = document.getElementById("rightList");
@@ -750,7 +522,7 @@ function renderMatrixSelect(){
 }
 
 function setStatus(){
-  statusBubble.innerHTML = `<div class="bubble good">✅ Options loaded from the PDF matrix for this word family</div>`;
+  statusBubble.innerHTML = `<div class="bubble good">✅ Matrix options loaded</div>`;
 }
 
 function renderRoot(){
@@ -817,12 +589,9 @@ function partMeanings(){
 }
 
 function wordCandidate(){
-  // student-built attempt (we do not “judge” here)
   const left = chosenLeft || "";
   const right = chosenRight || "";
-  // For “—” base labels like "gram / graph", just use the first for building
-  const baseBuild = current.base.includes("/") ? current.base.split("/")[0].trim() : current.base;
-  return `${left}${baseBuild}${right}` || "—";
+  return `${left}${current.base}${right}` || "—";
 }
 
 async function renderDefinition(){
@@ -873,9 +642,7 @@ function setCurrentMatrix(id){
   renderAll();
 }
 
-/* =========================================================
-   Actions
-   ========================================================= */
+/* Actions */
 clearBtn.addEventListener("click", ()=>{
   chosenLeft = "";
   chosenRight = "";
@@ -886,7 +653,6 @@ randomBtn.addEventListener("click", ()=>{
   const leftOpts = current.left.filter(x=>x.value);
   const rightOpts = current.right.filter(x=>x.value);
 
-  // randomly choose none/one/both
   chosenLeft = (Math.random() < 0.75 && leftOpts.length) ? leftOpts[Math.floor(Math.random()*leftOpts.length)].value : "";
   chosenRight = (Math.random() < 0.75 && rightOpts.length) ? rightOpts[Math.floor(Math.random()*rightOpts.length)].value : "";
   renderAll();
@@ -894,12 +660,11 @@ randomBtn.addEventListener("click", ()=>{
 
 matrixSelect.addEventListener("change", ()=> setCurrentMatrix(matrixSelect.value));
 
-/* =========================================================
-   Init
-   ========================================================= */
+/* Init */
 renderMatrixSelect();
 setCurrentMatrix(MATRICES[0].id);
 matrixSelect.value = MATRICES[0].id;
 </script>
 </body>
 </html>
+
