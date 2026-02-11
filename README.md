@@ -264,18 +264,13 @@ index.html
       background: rgba(255,255,255,.65);
       color: var(--muted);
     }
-    .bad{
-      border-color: rgba(255,79,182,.35);
-      background: rgba(255,79,182,.12);
-      color: #5e143b;
-    }
     .good{
       border-color: rgba(46,204,113,.35);
       background: rgba(46,204,113,.16);
       color: #0e3b1f;
     }
 
-    /* Hidden Word Key loader modal (NOT visible unless shortcut is used) */
+    /* Hidden Word Key loader modal */
     .modalWrap{
       position: fixed;
       inset: 0;
@@ -324,12 +319,18 @@ index.html
       justify-content:space-between;
       margin-top: 10px;
     }
+    .question{
+      font-size: 14px;
+      font-weight: 1200;
+      color: var(--ink);
+      margin: 6px 0 10px;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Morpheme Matrix Builder</h1>
-    <p class="subtitle">Pick a root/base, then click a prefix and suffix. If it’s not in the real-word list, you’ll see “not a real word combo.”</p>
+    <p class="subtitle">Pick a root/base, then click a prefix and suffix. Use clues to decide: real word or “word try”?</p>
   </header>
 
   <main>
@@ -341,7 +342,7 @@ index.html
         </div>
         <div class="control">
           <button id="clearBtn" class="ghost" aria-label="Clear prefix and suffix">Clear</button>
-          <button id="randomBtn" class="primary" aria-label="Choose a random real word">Random Real Word</button>
+          <button id="randomBtn" class="primary" aria-label="Choose a random word from the Word Key list">Random Word</button>
         </div>
       </div>
 
@@ -369,7 +370,7 @@ index.html
             <span class="pill" id="sufCount">0 options</span>
           </div>
           <div class="list" id="suffixList" tabindex="0" aria-label="Suffix list"></div>
-          <div class="tiny">Pick any suffix — some combos won’t be real words (and that’s okay!).</div>
+          <div class="tiny">Pick any suffix — then decide if it’s a real word.</div>
         </section>
       </div>
 
@@ -382,8 +383,9 @@ index.html
 
         <div class="outCard" aria-label="Word and meaning">
           <div class="outLabel">WORD + MEANING</div>
+          <div class="question">Is this a real word? How do you know?</div>
           <div class="outValue" id="finalWord">—</div>
-          <div class="meaning" id="finalMeaning">Choose parts to build a word.</div>
+          <div class="meaning" id="finalMeaning">Build a combo to see what it would mean.</div>
           <div id="comboBubble"></div>
         </div>
       </div>
@@ -444,8 +446,6 @@ index.html
     function P(p){ return { text:p, value:p, meaning: prefixMeaning[p] || "prefix" }; }
     function S(s){ return { text:s, value:s, meaning: suffixMeaning[s] || "suffix" }; }
 
-    // Keep these as your base list (you can add more matrices later).
-    // Real words come from the Word Key list you paste in (hidden loader). 
     const MATRICES = [
       mkLatin("form", ["in","re","de"], ["form"], "to shape", ["s","ed","ing","er","ation","al"]),
       mkLatin("port", ["im","re","de","trans"], ["port"], "to carry", ["s","ed","ing","er","ion","ation","able","al"]),
@@ -499,7 +499,7 @@ index.html
     // ============================================================
     // WORD KEY STORAGE (hidden loader)
     // ============================================================
-    const LS_KEY = "morpheme_matrix_wordkey_v2";
+    const LS_KEY = "morpheme_matrix_wordkey_v3";
 
     function loadAllWordLists(){
       try{
@@ -519,7 +519,6 @@ index.html
       localStorage.setItem(LS_KEY, JSON.stringify(obj));
     }
 
-    // A small starter set so it works immediately (you can overwrite via loader)
     const STARTER = {
       root_form: ["forms","formed","forming","former","formal","inform","reform","deform","information","informal","reformation"],
       root_port: ["import","report","deport","transport","portable","importation","deportation"],
@@ -541,7 +540,7 @@ index.html
     }
 
     // ============================================================
-    // PARSING: build (prefix, rootForm, suffix) combos from Word Key list
+    // PARSING: build combos from Word Key list (best-effort)
     // ============================================================
     function normalize(s){ return String(s || "").toLowerCase(); }
 
@@ -552,8 +551,6 @@ index.html
       const sufCands  = matrix.suffixes.map(s=>s.value).map(normalize);
       const rootCands = (matrix.rootForms || []).map(normalize);
 
-      // Try all (prefix, suffix, root) combos (safe + accurate enough for classroom sets)
-      // Handles common e-drop/e-add patterns (pose/ceive/scribe families).
       let best = null;
 
       for(const p of prefCands){
@@ -567,25 +564,19 @@ index.html
           for(const r of rootCands){
             if(!r) continue;
 
-            // exact
             if(mid === r) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
-            // e-add
             if(mid === r + "e") best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
-            // e-drop
             if(r.endsWith("e") && mid === r.slice(0,-1)) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
 
-            // Greek-ish: allow root form appearing inside mid (for things like geometry)
             if(matrix.kind === "greek" && mid.includes(r)) best = pickBetter(best, {pref:p, root:r, suf:s, word:w});
           }
         }
       }
-
-      return best; // may be null if we can’t parse (we ignore those)
+      return best;
     }
 
     function pickBetter(a, b){
       if(!a) return b;
-      // prefer longer root match, then longer prefix+suffix
       const score = (x) => (x.root?.length||0)*10 + (x.pref?.length||0) + (x.suf?.length||0);
       return score(b) > score(a) ? b : a;
     }
@@ -602,8 +593,26 @@ index.html
         const combo = parseWordToCombo(word, matrix);
         if(combo) combos.push(combo);
       }
-
       return { combos, wordSet };
+    }
+
+    // ============================================================
+    // MEANING BUILDER (always shown; never claims not-real)
+    // ============================================================
+    function comboMeaning(prefix, rootMeaning, suffix){
+      const p = prefix ? (prefixMeaning[prefix] || "prefix meaning") : "";
+      const s = suffix ? (suffixMeaning[suffix] || "suffix meaning") : "";
+      if(prefix && suffix) return `Meaning clue: ${p} + ${rootMeaning} + ${s}`;
+      if(prefix) return `Meaning clue: ${p} + ${rootMeaning}`;
+      if(suffix) return `Meaning clue: ${rootMeaning} + ${s}`;
+      return `Meaning clue: ${rootMeaning}`;
+    }
+
+    function displayWordCandidate(prefix, rootLabel, suffix){
+      // This is a “student guess” display, not a guarantee.
+      // We show the combo as a “built word” attempt.
+      // Format: prefix + rootLabel + suffix (no plus signs)
+      return `${prefix || ""}${rootLabel}${suffix || ""}` || "—";
     }
 
     // ============================================================
@@ -652,7 +661,6 @@ index.html
       MATRICES.forEach(m=>{
         const opt = document.createElement("option");
         opt.value = m.id;
-        // Show root/base instead of “Matrix #”
         opt.textContent = `${m.rootLabel} — ${m.rootMeaning}`;
         matrixSelect.appendChild(opt);
       });
@@ -662,7 +670,7 @@ index.html
       const stored = loadAllWordLists();
       const hasLoaded = stored[current.id] && stored[current.id].length;
       statusBubble.innerHTML = hasLoaded
-        ? `<div class="bubble good">✅ Real-word list loaded</div>`
+        ? `<div class="bubble good">✅ Word Key list loaded</div>`
         : `<div class="bubble">⭐ Using starter list (Ctrl/Cmd + Shift + L to load Word Key list)</div>`;
     }
 
@@ -681,7 +689,7 @@ index.html
       setStatus();
     }
 
-    // For your rule: only show affixes that COULD make a real word for this base (individually).
+    // Only show affixes that appear in at least one Word Key word for this base.
     function allowedPrefixSet(){
       const set = new Set(comboData.combos.map(c => c.pref || ""));
       set.add("");
@@ -742,43 +750,44 @@ index.html
 
     function partMeanings(){
       const parts = [];
-      if(chosenPrefix) parts.push(`(${chosenPrefix}-) ${prefixMeaning[chosenPrefix] || "prefix"}`);
+      if(chosenPrefix) parts.push(`(${chosenPrefix}-) ${prefixMeaning[chosenPrefix] || "prefix meaning"}`);
       parts.push(`${current.rootLabel} = ${current.rootMeaning}`);
-      if(chosenSuffix) parts.push(`(-${chosenSuffix}) ${suffixMeaning[chosenSuffix] || "suffix"}`);
+      if(chosenSuffix) parts.push(`(-${chosenSuffix}) ${suffixMeaning[chosenSuffix] || "suffix meaning"}`);
       return parts.join(" • ");
     }
 
-    function findRealWord(){
-      // Find a combo in parsed combos that exactly matches chosen prefix+suffix
+    function isInWordKey(){
+      // Try a direct “constructed” guess first:
+      const guess = normalize(displayWordCandidate(chosenPrefix, current.rootLabel, chosenSuffix));
+      if(comboData.wordSet.has(guess)) return true;
+
+      // Also check parsed combos:
       const hit = comboData.combos.find(c => (c.pref||"") === chosenPrefix && (c.suf||"") === chosenSuffix);
-      return hit ? hit.word : "";
+      return !!hit;
     }
 
     function renderOutputs(){
       wordSumEl.textContent = wordSum();
       partMeaningsEl.textContent = partMeanings();
 
-      const real = findRealWord();
+      // Show the "built word attempt" (not a verdict)
+      const candidate = displayWordCandidate(chosenPrefix, current.rootLabel, chosenSuffix);
+      finalWordEl.textContent = candidate || "—";
 
-      if(real){
-        finalWordEl.textContent = real;
-        finalMeaningEl.textContent = "Real word ✅ (from the Word Key list)";
-        comboBubbleEl.innerHTML = `<div class="bubble good">✅ Real word combo</div>`;
+      // Always show meaning clue
+      finalMeaningEl.textContent = comboMeaning(chosenPrefix, current.rootMeaning, chosenSuffix);
+
+      // Optional: if it appears in Word Key, show a gentle note (not a verdict)
+      if((chosenPrefix || chosenSuffix) && isInWordKey()){
+        comboBubbleEl.innerHTML = `<div class="bubble good">Appears in the Word Key list (for this base)</div>`;
       } else {
-        // If either is unselected, give a gentle prompt. If both selected, show your requested message.
+        comboBubbleEl.innerHTML = ``;
+      }
+
+      // If nothing selected, make it friendly
+      if(!chosenPrefix && !chosenSuffix){
         finalWordEl.textContent = "—";
-        if(chosenPrefix || chosenSuffix){
-          if(chosenPrefix && chosenSuffix){
-            finalMeaningEl.textContent = "Not a real word combo (for this matrix). Try a different prefix or suffix!";
-            comboBubbleEl.innerHTML = `<div class="bubble bad">🚫 Not a real word combo</div>`;
-          } else {
-            finalMeaningEl.textContent = "Pick one more part to test your combo.";
-            comboBubbleEl.innerHTML = `<div class="bubble">✨ Keep building!</div>`;
-          }
-        } else {
-          finalMeaningEl.textContent = "Choose parts to build a word.";
-          comboBubbleEl.innerHTML = `<div class="bubble">✨ Start with a prefix or suffix</div>`;
-        }
+        finalMeaningEl.textContent = "Build a combo to see what it would mean.";
       }
     }
 
@@ -805,11 +814,19 @@ index.html
     });
 
     randomBtn.addEventListener("click", ()=>{
-      const pool = comboData.combos;
-      if(!pool.length) return;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      chosenPrefix = pick.pref || "";
-      chosenSuffix = pick.suf || "";
+      // Pick a random real word from the Word Key list we have for this base
+      const list = (wordLists[current.id] || []);
+      if(!list.length) return;
+      const pick = list[Math.floor(Math.random() * list.length)];
+      // Try to parse it into prefix/suffix so UI highlights something
+      const parsed = parseWordToCombo(pick, current);
+      if(parsed){
+        chosenPrefix = parsed.pref || "";
+        chosenSuffix = parsed.suf || "";
+      } else {
+        chosenPrefix = "";
+        chosenSuffix = "";
+      }
       renderAll();
     });
 
