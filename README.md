@@ -25,11 +25,11 @@ index.html
         linear-gradient(155deg, var(--bg1), var(--bg2), var(--bg3));
       min-height:100vh;
     }
-    header{ max-width: 1100px; margin: 0 auto; padding: 18px 14px 6px; }
+    header{ max-width: 1180px; margin: 0 auto; padding: 18px 14px 6px; }
     h1{ margin:0 0 6px; font-size: 22px; letter-spacing:.2px; }
     .subtitle{ margin:0; color: var(--muted); line-height: 1.35; font-size: 14px; font-weight: 850; }
 
-    main{ max-width: 1100px; margin: 0 auto; padding: 12px 14px 24px; }
+    main{ max-width: 1180px; margin: 0 auto; padding: 12px 14px 24px; }
     .app{
       background: var(--card);
       border-radius: var(--r);
@@ -65,16 +65,17 @@ index.html
     button:active{ transform: translateY(1px); }
     button.primary{ border-color: rgba(122,92,255,.35); background: rgba(122,92,255,.12); }
     button.ghost{ background: rgba(255,255,255,.75); }
+    button.small{ padding: 7px 10px; font-size: 13px; border-radius: 12px; }
 
     .matrix{ display:grid; grid-template-columns: 1fr; gap: 12px; padding: 14px; }
-    @media (min-width: 900px){ .matrix{ grid-template-columns: 1fr 1fr 1fr; } }
+    @media (min-width: 940px){ .matrix{ grid-template-columns: 1fr 1fr 1fr; } }
 
     .pane{
       border-radius: 16px;
       border: 2px solid rgba(19,35,63,.12);
       background: rgba(255,255,255,.80);
       padding: 12px;
-      min-height: 300px;
+      min-height: 320px;
     }
     .paneTitle{
       display:flex; align-items:center; justify-content:space-between;
@@ -90,7 +91,7 @@ index.html
 
     .rootCard{
       text-align:center;
-      padding: 16px 12px;
+      padding: 14px 12px;
       border-radius: 16px;
       border: 2px solid rgba(122,92,255,.22);
       background:
@@ -98,16 +99,36 @@ index.html
         radial-gradient(circle at 85% 30%, rgba(122,92,255,.18), transparent 35%),
         radial-gradient(circle at 30% 90%, rgba(255,159,28,.20), transparent 35%),
         rgba(122,92,255,.06);
-      min-height: 300px;
-      display:flex; flex-direction:column; justify-content:center; gap:10px;
+      min-height: 320px;
+      display:flex; flex-direction:column; justify-content:flex-start; gap:10px;
     }
-    .rootText{ font-size: 44px; font-weight: 1200; letter-spacing: .6px; }
+    .rootText{ font-size: 44px; font-weight: 1200; letter-spacing: .6px; line-height: 1; margin-top: 6px;}
     .rootAlt{ font-size: 13px; color: var(--muted); font-weight: 950; }
     .rootMeaning{ font-size: 16px; font-weight: 1200; }
     .tiny{ font-size: 12px; color: var(--muted); font-weight: 900; line-height: 1.35; }
 
+    .chips{
+      display:flex; flex-wrap:wrap; justify-content:center;
+      gap:8px; margin-top: 2px;
+    }
+    .chip{
+      border-radius: 999px;
+      border: 2px solid rgba(19,35,63,.14);
+      background: rgba(255,255,255,.78);
+      padding: 7px 10px;
+      font-weight: 1150;
+      font-size: 13px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      border-color: rgba(255,79,182,.75);
+      box-shadow: 0 0 0 4px rgba(255,79,182,.16);
+      background: rgba(255,79,182,.10);
+    }
+
     .list{
-      height: 240px; overflow:auto; padding-right: 4px;
+      height: 250px; overflow:auto; padding-right: 4px;
       border-radius: 14px; border: 2px dashed rgba(19,35,63,.18);
       background: rgba(255,255,255,.78);
     }
@@ -125,8 +146,13 @@ index.html
       background: rgba(255,79,182,.08);
     }
 
-    .outputs{ padding: 0 14px 14px; display:grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 900px){ .outputs{ grid-template-columns: 1fr 1fr; } }
+    .outputs{
+      padding: 0 14px 14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 940px){ .outputs{ grid-template-columns: 1fr 1fr; } }
     .outCard{
       border-radius: 16px;
       border: 2px solid rgba(19,35,63,.12);
@@ -145,20 +171,94 @@ index.html
       border: 2px solid rgba(19,35,63,.12);
       background: rgba(255,255,255,.65);
       color: var(--muted);
+      flex-wrap:wrap;
     }
     .good{
       border-color: rgba(46,204,113,.35);
       background: rgba(46,204,113,.16);
       color: #0e3b1f;
     }
+    .warn{
+      border-color: rgba(255,159,28,.45);
+      background: rgba(255,159,28,.18);
+      color: #5a3a00;
+    }
+    .bad{
+      border-color: rgba(255,79,182,.55);
+      background: rgba(255,79,182,.14);
+      color: #5a0b2f;
+    }
 
     .question{ font-size: 14px; font-weight: 1200; color: var(--ink); margin: 6px 0 10px; }
+
+    details{
+      margin-top: 10px;
+      border-radius: 14px;
+      border: 2px solid rgba(19,35,63,.10);
+      background: rgba(255,255,255,.7);
+      padding: 10px 10px;
+    }
+    summary{ cursor:pointer; font-weight: 1100; color: var(--muted); }
+    .bank{
+      margin-top: 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .bankSmall{ font-size: 12px; color: var(--muted); font-weight: 950; line-height: 1.35;}
+    .bankList{
+      margin-top: 10px;
+      max-height: 180px;
+      overflow:auto;
+      border-radius: 14px;
+      border: 2px dashed rgba(19,35,63,.18);
+      background: rgba(255,255,255,.78);
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .wordTag{
+      display:inline-block;
+      padding: 4px 8px;
+      margin: 4px 6px 0 0;
+      border-radius: 999px;
+      border: 2px solid rgba(19,35,63,.10);
+      background: rgba(122,92,255,.08);
+    }
+    .wordTag.hit{
+      background: rgba(46,204,113,.14);
+      border-color: rgba(46,204,113,.30);
+    }
+    .wordTag.miss{
+      background: rgba(255,79,182,.10);
+      border-color: rgba(255,79,182,.30);
+    }
+
+    .sentenceArea{
+      width: 100%;
+      border-radius: 14px;
+      border: 2px solid rgba(19,35,63,.14);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 900;
+      resize: vertical;
+      min-height: 90px;
+      outline:none;
+    }
   </style>
 </head>
+
 <body>
 <header>
   <h1>Morpheme Matrix Playground</h1>
-  <p class="subtitle">Pick a matrix (from the PDF), then choose a left part + the base + a right part. Then decide: <b>Is it a real word or a fake word?</b></p>
+  <p class="subtitle">
+    Pick a matrix, then build: <b>left + base + right</b>.
+    Then decide: <b>Real word or fake word?</b> (and prove it!)
+  </p>
 </header>
 
 <main>
@@ -171,22 +271,26 @@ index.html
       <div class="control">
         <button id="clearBtn" class="ghost">Clear</button>
         <button id="randomBtn" class="primary">Random Combo</button>
+        <button id="prefetchBtn" class="ghost">Prefetch definitions (this matrix)</button>
       </div>
     </div>
 
     <div class="matrix">
       <section class="pane" aria-label="Left side parts">
         <div class="paneTitle">
-          <h2 id="leftTitle">Prefixes / Left Forms</h2>
+          <h2 id="leftTitle">Left Parts</h2>
           <span class="pill" id="leftCount">0 options</span>
         </div>
         <div class="list" id="leftList" tabindex="0" aria-label="Left list"></div>
-        <div class="tiny">Click again to turn a selection off.</div>
+        <div class="tiny">Tip: click again to turn a selection off.</div>
       </section>
 
       <section class="rootCard" aria-label="Base or middle form">
+        <div class="rootAlt" id="rootAlt">—</div>
+
         <div class="rootText" id="rootText">—</div>
-        <div class="rootAlt" id="rootAlt"></div>
+        <div class="chips" id="baseChips" aria-label="Base spelling choices"></div>
+
         <div class="rootMeaning" id="rootMeaning">—</div>
         <div class="tiny" id="rootMeta"></div>
         <div id="statusBubble"></div>
@@ -194,11 +298,11 @@ index.html
 
       <section class="pane" aria-label="Right side parts">
         <div class="paneTitle">
-          <h2 id="rightTitle">Suffixes / Right Parts</h2>
+          <h2 id="rightTitle">Right Parts</h2>
           <span class="pill" id="rightCount">0 options</span>
         </div>
         <div class="list" id="rightList" tabindex="0" aria-label="Right list"></div>
-        <div class="tiny">Pick a right part too — you can do BOTH.</div>
+        <div class="tiny">Yes — you can choose BOTH a left part and a right part.</div>
       </section>
     </div>
 
@@ -207,29 +311,56 @@ index.html
         <div class="outLabel">WORD SUM</div>
         <div class="outValue" id="wordSum">—</div>
         <div class="tiny" id="partMeanings">—</div>
+
+        <details>
+          <summary>Word Bank (Word Key for this matrix)</summary>
+          <div class="bank">
+            <div class="bankSmall" id="bankStats">—</div>
+            <div class="control">
+              <button id="copyWordsBtn" class="small ghost">Copy Word Bank</button>
+              <button id="exportDefsBtn" class="small ghost">Export saved definitions</button>
+              <button id="importDefsBtn" class="small ghost">Import definitions</button>
+            </div>
+          </div>
+          <div class="bankList" id="bankList">—</div>
+          <div class="tiny">Green = in Word Key. Pink = not in Word Key (yet). Kids can still test it!</div>
+        </details>
       </div>
 
       <div class="outCard" aria-label="Word and definition">
         <div class="outLabel">WORD + DEFINITION</div>
         <div class="question">Is this a real word or a fake word? How do you know?</div>
+
         <div class="outValue" id="finalWord">—</div>
         <div class="meaning" id="finalDefinition">Build a combo to see a definition.</div>
         <div id="comboBubble"></div>
+
+        <details open>
+          <summary>Sentence Test</summary>
+          <div class="tiny">Try using the word in a sentence. Does it make sense? Would you see it in a book?</div>
+          <textarea id="sentenceBox" class="sentenceArea" placeholder="Write a sentence using your word..."></textarea>
+          <div class="tiny" id="sentencePrompts"></div>
+        </details>
       </div>
     </div>
   </div>
 </main>
 
 <script>
+/* =========================================================
+   DATA (Matrices + Word Key)
+   - Matrices come from the PDF matrix pages (1–25).
+   - Word Key comes from PDF pages 34–37.
+   ========================================================= */
+
+const MATRICES = [{"num": 1, "family": "Latin", "label": "Latin 1: form", "baseVariants": ["form"], "baseMeaning": "to shape", "left": ["in", "re", "de"], "right": ["s", "ed", "ing", "er", "ation", "al"]}, {"num": 2, "family": "Latin", "label": "Latin 2: port", "baseVariants": ["port"], "baseMeaning": "to carry", "left": ["im", "re", "de"], "right": ["s", "ed", "ing", "er", "ion, ation", "able", "al"]}, {"num": 3, "family": "Latin", "label": "Latin 3: rupt", "baseVariants": ["rupt"], "baseMeaning": "to break or burst", "left": ["dis", "inter", "e"], "right": ["s", "ed", "ing", "er", "tion", "ible", "ive"]}, {"num": 4, "family": "Latin", "label": "Latin 4: tract", "baseVariants": ["tract"], "baseMeaning": "to draw or pull", "left": ["dis", "re", "de", "sub"], "right": ["s", "ed", "ing", "or", "ion", "able, ible"]}, {"num": 5, "family": "Latin", "label": "Latin 5: scrib, script", "baseVariants": ["scrib", "script"], "baseMeaning": "to write", "left": ["in", "de", "pre", "sub"], "right": ["s", "ed", "ing", "er", "ion", "able"]}, {"num": 6, "family": "Latin", "label": "Latin 6: spect", "baseVariants": ["spect"], "baseMeaning": "to see, watch, or observe", "left": ["in", "re", "sus"], "right": ["s", "ed", "ing", "er", "or", "ion", "able", "ive"]}, {"num": 7, "family": "Latin", "label": "Latin 7: struct", "baseVariants": ["struct"], "baseMeaning": "to build", "left": ["in", "de", "con"], "right": ["s", "ed", "ing", "or", "ion", "ive"]}, {"num": 8, "family": "Latin", "label": "Latin 8: flect, flex", "baseVariants": ["flect", "flex"], "baseMeaning": "to bend or curve", "left": ["in", "re", "de"], "right": ["s/es", "ed", "ing", "or", "ion", "ive"]}, {"num": 9, "family": "Latin", "label": "Latin 9: dict", "baseVariants": ["dict"], "baseMeaning": "to say or tell", "left": ["in", "pre", "inter"], "right": ["s", "ed", "ing", "able", "ive", "ion"]}, {"num": 10, "family": "Latin", "label": "Latin 10: fer", "baseVariants": ["fer"], "baseMeaning": "to bear or yield", "left": ["in", "re", "de", "pre", "trans"], "right": ["s", "ed", "ing", "able", "al"]}, {"num": 11, "family": "Latin", "label": "Latin 11: mit, miss", "baseVariants": ["mit", "miss"], "baseMeaning": "to send", "left": ["dis", "re", "sub", "trans"], "right": ["s/es", "ed", "ing", "er", "ion", "ible", "al"]}, {"num": 12, "family": "Latin", "label": "Latin 12: duce, duct", "baseVariants": ["duce", "duct"], "baseMeaning": "to lead", "left": ["in", "de", "re", "con", "pro"], "right": ["s", "ed", "ing", "or", "ion", "ible", "ive"]}, {"num": 13, "family": "Latin", "label": "Latin 13: vers, vert", "baseVariants": ["vers", "vert"], "baseMeaning": "to turn", "left": ["in", "re", "sub", "con"], "right": ["s", "ed", "ing", "ion", "ive"]}, {"num": 14, "family": "Latin", "label": "Latin 14: fact, fect, fict", "baseVariants": ["fact", "fect", "fict"], "baseMeaning": "to make or do", "left": ["in", "de", "per"], "right": ["s", "ed", "ing", "or", "ion", "al", "ive"]}, {"num": 15, "family": "Latin", "label": "Latin 15: tend, tens, tent", "baseVariants": ["tend", "tens", "tent"], "baseMeaning": "to stretch or strain", "left": ["in", "dis", "pre", "con"], "right": ["s", "ed", "ing", "er", "ion", "ive"]}, {"num": 16, "family": "Latin", "label": "Latin 16: ceipt, ceive, cept", "baseVariants": ["ceipt", "ceive", "cept"], "baseMeaning": "to take or catch", "left": ["de", "re", "inter", "con", "per", "ex"], "right": ["s", "ed", "ing", "er", "or", "ion", "able", "ive"]}, {"num": 17, "family": "Latin", "label": "Latin 17: tain, ten, tin", "baseVariants": ["tain", "ten", "tin"], "baseMeaning": "to hold", "left": ["re", "de", "con", "per", "sus"], "right": ["s", "ed", "ing", "er", "able", "tion"]}, {"num": 18, "family": "Latin", "label": "Latin 18: pos, pound", "baseVariants": ["pos", "pound"], "baseMeaning": "to put in place or set", "left": ["im", "dis", "de", "com", "ex", "pro"], "right": ["s", "ed", "ing", "er", "or", "tion", "al"]}, {"num": 19, "family": "Greek", "label": "Greek 19: gram, graph", "baseVariants": ["gram", "graph"], "baseMeaning": "written or drawn", "left": ["auto", "chrono", "demo", "geo", "hydro", "phono", "photo", "tele", "thermo", "autobio", "bio"], "right": ["er", "ic", "ical", "y"]}, {"num": 20, "family": "Greek", "label": "Greek 20: logy, ology", "baseVariants": ["logy", "ology"], "baseMeaning": "study of", "left": ["bio", "chrono", "geo", "hydro", "graph", "meter", "phono", "psych", "techn", "microbio"], "right": ["ic", "ical", "ist"]}, {"num": 21, "family": "Greek", "label": "Greek 21: meter, metr", "baseVariants": ["meter", "metr"], "baseMeaning": "measure", "left": ["bio", "chrono", "geo", "grapho", "hydro", "micro", "photo", "sphero", "tele", "thermo"], "right": ["ic", "y"]}, {"num": 22, "family": "Greek", "label": "Greek 22: phone, phon", "baseVariants": ["phone", "phon"], "baseMeaning": "sound", "left": ["geo", "gramo", "hydro", "micro", "tele"], "right": ["eme", "ic"]}, {"num": 23, "family": "Greek", "label": "Greek 23: sphere", "baseVariants": ["sphere"], "baseMeaning": "circle", "left": ["astro", "bio", "eco", "geo", "hemi", "hydro", "micro", "photo", "thermo"], "right": ["ic"]}, {"num": 24, "family": "Greek", "label": "Greek 24: cracy, crat", "baseVariants": ["cracy", "crat"], "baseMeaning": "rule", "left": ["auto", "demo", "techno"], "right": ["ic"]}, {"num": 25, "family": "Greek", "label": "Greek 25: scope", "baseVariants": ["scope"], "baseMeaning": "watch or see", "left": ["bio", "chrono", "hydro", "micro", "phono", "photo", "tele", "thermo"], "right": ["ic"]}];
+
+const WORD_KEY = {"1":["forms","formed","forming","former","formation","formal","inform","reform","deform","informs","informed","informing","informer","information","informal","reforms","reformed","reforming","reformer","reformation","deforms","deformed","deforming","deformer","deformation"],"2":["ports","ported","porting","porter","portion","portable","portal","import","report","deport","imports","imported","importing","importer","importation","importable","reports","reported","reporting","reporter","reportable","deports","deported","deporting","deportation","deportable"],"3":["disrupt","interrupt","erupt","disrupts","disrupted","disrupting","disrupter","disruption","disruptive","interrupts","interrupted","interrupting","interrupter","interruption","interruptible","interruptive","erupts","erupted","erupting","eruption","eruptible","eruptive"],"4":["tracts","tractor","traction","tractable","distract","retract","detract","subtract","distracts","distracted","distracting","distractor","distraction","distractable","retracts","retracted","retracting","retractor","retraction","retractable","detracts","detracted","detracting","detractor","detraction","detractable","subtracts","subtracted","subtracting","subtractor","subtraction","subtractable"],"5":["scribes","scribed","scribing","scriber","scribes","describes","described","describing","describer","description","descript","prescribes","prescribed","prescribing","prescriber","prescription","subscribes","subscribed","subscribing","subscriber","subscription","script","scripts","scripted","scripting","scripture","inscribe","inscribes","inscribed","inscribing","inscription","scribe","scribal","describable","prescribable","subscribable"],"6":["spects","spected","specting","specter","spectacle","inspect","respect","suspect","inspects","inspected","inspecting","inspector","inspection","inspective","respects","respected","respecting","respecter","respectable","respective","suspects","suspected","suspecting","suspecter","suspicion","suspectable","suspective"],"7":["structs","structed","structing","structor","structure","instruction","construct","destruct","instruct","instructs","instructed","instructing","instructor","instruction","instructive","constructs","constructed","constructing","constructor","construction","constructive","destructs","destructed","destructing","destructor","destruction","destructive"],"8":["flexes","flexed","flexing","flexor","flexion","inflect","reflect","deflect","inflects","inflected","inflecting","inflector","inflection","inflective","reflects","reflected","reflecting","reflector","reflection","reflective","deflects","deflected","deflector","deflection","deflective","reflex","reflexes","reflexed","reflexing","reflexive"],"9":["indict","predict","interdict","indicts","indicted","indicting","indictable","predicts","predicted","predicting","prediction","predictable","predictive","interdicts","interdicted","interdicting","interdiction","interdictive"],"10":["fers","fered","fering","ferer","infer","refer","defer","prefer","transfer","infers","inferred","inferring","inference","inferrable","refers","referred","referring","referrer","reference","referrable","defers","deferred","deferring","deferrable","prefers","preferred","preferring","preference","preferable","transfers","transferred","transferring","transferable"],"11":["mits","mitted","mitting","mitter","mission","missile","dismiss","remit","submit","transmit","dismisses","dismissed","dismissing","dismissal","remits","remitted","remitting","remitter","remission","submits","submitted","submitting","submitter","submission","transmits","transmitted","transmitting","transmitter","transmission","transmissible","transmittal"],"12":["duces","duced","ducing","ducer","duction","ducible","ducts","ducted","ducting","ductor","ductive","induce","reduce","deduce","conduce","produce","induces","induced","inducing","inducer","induction","inducible","reduces","reduced","reducing","reducer","reduction","reducible","deduces","deduced","deducing","deducer","deduction","deducible","conduces","conduced","conducing","conducer","conduction","conduct","conducts","conducted","conducting","conductor","conductive","produces","produced","producing","producer","production","producible"],"13":["verses","versed","versing","version","versatile","invert","revert","subvert","convert","inverts","inverted","inverting","inverter","inversion","invertible","reverts","reverted","reverting","reverter","reversion","revertible","subverts","subverted","subverting","subverter","subversion","subversive","converts","converted","converting","converter","conversion","convertible","converses","conversed","conversing","converse","conversant","conversational"],"14":["facts","facted","facting","factor","faction","factual","infect","defect","perfect","infects","infected","infecting","infecter","infection","infectious","infective","defects","defected","defecting","defector","defection","defective","perfects","perfected","perfecting","perfecter","perfection","perfectible","perfective","effects","effected","effecting","effector","effect","effective","fiction","fictitious"],"15":["intend","distend","pretend","contend","intends","intended","intending","intender","distends","distended","distending","pretends","pretended","pretending","pretender","contends","contended","contending","contender","intent","content","intents","intention","intentions","contents","contention","contentions","pretentions","intense","pretense","intensive","pretenses","tenses","tensed","tensing","tenser","tension"],"16":["deceit","receipt","conceit","receipts","deceive","receive","conceive","perceive","deceives","deceived","deceiving","deceiver","deception","deceivable","receives","received","receiving","receiver","reception","receivable","conceives","conceived","conceiving","conceiver","conception","conceivable","perceives","perceived","perceiving","perceiver","perception","perceivable"],"17":["tains","tained","taining","tainer","tainable","retains","retained","retaining","retainer","retention","retainable","detains","detained","detaining","detainer","detention","detainable","contains","contained","containing","container","containable","pertains","pertained","pertaining","pertainer","pertainable","sustains","sustained","sustaining","sustainer","sustainable","ten","tens","tended","tending","tender","tension","tent","tents","tented","tenting","tenter"],"18":["poses","posed","posing","poser","position","positional","impose","dispose","depose","compose","expose","propose","imposes","imposed","imposing","imposer","imposition","imposable","disposes","disposed","disposing","disposer","disposition","disposable","deposes","deposed","deposing","deposer","deposition","deposable","composes","composed","composing","composer","composition","composable","exposes","exposed","exposing","exposer","exposition","exposable","proposes","proposed","proposing","proposer","proposition","proposable"],"19":["autograph","biograph","chronogram","chronograph","hydrograph","phonogram","phonograph","photogram","photograph","telegram","telegraph","thermogram","thermograph","autobiographer","biographer","chronographer","hydrographer","phonographer","photographer","telegrapher","telegrapher","thermographer","autographic","biographic","chronographic","hydrographic","phonographic","photographic","telegraphic","thermographic","autobiographic","biographical","chronographical","hydrographical","phonographical","photographical","telegraphical","thermographical","autobiography","biography","chronography","hydrography","phonography","photography","telegraphy","thermography"],"20":["biology","chronology","geology","hydrology","graphology","meteorology","phonology","psychology","technology","microbiology","biologic","chronologic","geologic","hydrologic","meteorologic","phonologic","psychologic","technologic","microbiologic","biological","chronological","geological","hydrological","meteorological","phonological","psychological","technological","microbiological","biologist","chronologist","geologist","hydrologist","phonologist","psychologist","technologist","microbiologist"],"21":["chronometer","geometer","hydrometer","micrometer","photometer","thermometer","chronometric","geometric","hydrometric","micrometric","photometric","thermometric","chronometry","geometry","hydrometry","micrometry","photometry","thermometry"],"22":["geophone","gramophone","hydrophone","microphone","telephone","phoneme","phonemic"],"23":["astrosphere","biosphere","ecosphere","geosphere","hemisphere","hydrosphere","microsphere","photosphere","thermosphere","biospheric","ecospheric","geospheric","hemispheric","hydrospheric","microspheric","photospheric","thermospheric"],"24":["autocracy","democracy","technocracy","autocrat","democrat","technocrat","autocratic","democratic","technocratic"],"25":["bioscope","chronoscope","hydroscope","microscope","phonoscope","photoscope","telescope","thermoscope","microscopic","telescopic"]};
+
 const NONE = { text:"—", value:"", meaning:"(none)" };
 
-function part(text, meaning=""){
-  const v = (text||"").trim();
-  return { text: v || "—", value: v, meaning: meaning || "" };
-}
-
+// Prefix/suffix meanings (kid-friendly). If something isn't here, we still work.
 const MEAN = {
-  // Common prefixes
   in: "in, into, or toward",
   im: "in, into, or toward",
   un: "not or opposite of",
@@ -251,237 +382,120 @@ const MEAN = {
   ex: "out",
   e: "out",
 
-  // Common suffix meanings
-  "s": "plural noun / singular verb",
-  "s/es": "plural noun / singular verb",
-  "es": "plural noun / singular verb",
-  "ed": "past tense",
-  "ing": "happening now",
-  "ly": "in the manner of",
-  "er": "someone who",
-  "or": "someone who",
-  "ion": "act/state of",
-  "tion": "act/state of",
-  "sion": "act/state of",
-  "ation": "act/state of",
-  "ion, ation": "act/state of",
-  "able": "can be",
-  "ible": "can be",
-  "able, ible": "can be",
-  "al": "relating to",
-  "ive": "causing/making",
-  "ic": "relating to",
-  "ical": "relating to",
-  "ist": "one who",
-  "y": "subject or science",
-  "eme": "unit"
+  "s":"plural noun / singular verb",
+  "s/es":"plural noun / singular verb",
+  "es":"plural noun / singular verb",
+  "ed":"past tense",
+  "ing":"happening now",
+  "er":"someone who",
+  "or":"someone who",
+  "ion":"act/state of",
+  "tion":"act/state of",
+  "sion":"act/state of",
+  "ation":"act/state of",
+  "ion, ation":"act/state of",
+  "able":"can be",
+  "ible":"can be",
+  "able, ible":"can be",
+  "al":"relating to",
+  "ive":"causing/making",
+  "ic":"relating to",
+  "ical":"relating to",
+  "ist":"one who",
+  "y":"subject or science",
+  "eme":"unit"
 };
 
+function part(text, meaning=""){
+  const v = (text||"").trim();
+  return { text: v || "—", value: v, meaning: meaning || "" };
+}
 function withMeanings(list){
   return [NONE, ...list.map(x => part(x, MEAN[x] || ""))];
 }
 
-// --- Base matrix templates (some have center with multiple options)
-const BASE_MATRICES = [
-  // Latin (unchanged)
-  { id:"latin_01_form", label:"Latin 1: form (to shape)", family:"Latin", base:"form", baseMeaning:"to shape", baseType:"free",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","re","de"]),
-    right: withMeanings(["s","ed","ing","er","ation","al"])
-  },
-  { id:"latin_02_port", label:"Latin 2: port (to carry)", family:"Latin", base:"port", baseMeaning:"to carry", baseType:"free",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["im","re","de"]),
-    right: withMeanings(["s","ed","ing","er","ion, ation","able","al"])
-  },
-  { id:"latin_03_rupt", label:"Latin 3: rupt (to break or burst)", family:"Latin", base:"rupt", baseMeaning:"to break or burst", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["dis","inter","e"]),
-    right: withMeanings(["s","ed","ing","er","tion","ible","ive"])
-  },
-  { id:"latin_04_tract", label:"Latin 4: tract (to draw or pull)", family:"Latin", base:"tract", baseMeaning:"to draw or pull", baseType:"free",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["dis","re","de","sub"]),
-    right: withMeanings(["s","ed","ing","or","ion","able, ible"])
-  },
-  { id:"latin_05_scrib_script", label:"Latin 5: scrib / script (to write)", family:"Latin", base:"scrib", baseMeaning:"to write", baseType:"bound & free (script is free*)",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","de","pre","sub"]),
-    right: withMeanings(["s","ed","ing","er","ion","able"])
-  },
-  { id:"latin_06_spect", label:"Latin 6: spect (to see, watch, observe)", family:"Latin", base:"spect", baseMeaning:"to see, watch, or observe", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","re","sus"]),
-    right: withMeanings(["s","ed","ing","er","or","ion","able","ive"])
-  },
-  { id:"latin_07_struct", label:"Latin 7: struct (to build)", family:"Latin", base:"struct", baseMeaning:"to build", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","de","con"]),
-    right: withMeanings(["s","ed","ing","or","ion","ive"])
-  },
-  { id:"latin_08_flect_flex", label:"Latin 8: flect / flex (to bend or curve)", family:"Latin", base:"flect", baseMeaning:"to bend or curve", baseType:"bound & free (flex is free*)",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","re","de"]),
-    right: withMeanings(["s/es","ed","ing","or","ion","ive"])
-  },
-  { id:"latin_09_dict", label:"Latin 9: dict (to say or tell)", family:"Latin", base:"dict", baseMeaning:"to say or tell", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","pre","inter"]),
-    right: withMeanings(["s","ed","ing","ion","able","ive"])
-  },
-  { id:"latin_10_fer", label:"Latin 10: fer (to bear or yield)", family:"Latin", base:"fer", baseMeaning:"to bear or yield", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","re","de","pre","trans"]),
-    right: withMeanings(["s","ed","ing","able","al"])
-  },
-  { id:"latin_11_mit_miss", label:"Latin 11: mit / miss (to send)", family:"Latin", base:"mit", baseMeaning:"to send", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["dis","re","sub","trans"]),
-    right: withMeanings(["s/es","ed","ing","er","ion","ible","al"])
-  },
-  { id:"latin_12_duce_duct", label:"Latin 12: duce / duct (to lead)", family:"Latin", base:"duce", baseMeaning:"to lead", baseType:"bound & free (duct is free*)",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","de","re","con","pro"]),
-    right: withMeanings(["s","ed","ing","or","ion","ible","ive"])
-  },
-  { id:"latin_13_vers_vert", label:"Latin 13: vers / vert (to turn)", family:"Latin", base:"vers", baseMeaning:"to turn", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","re","sub","con"]),
-    right: withMeanings(["s","ed","ing","ion","ive"])
-  },
-  { id:"latin_14_fact_fect_fict", label:"Latin 14: fact / fect / fict (to make or do)", family:"Latin", base:"fact", baseMeaning:"to make or do", baseType:"bound & free (fact is free*)",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","de","per"]),
-    right: withMeanings(["s","ed","ing","or","ion","al","ive"])
-  },
-  { id:"latin_15_tend_tent_tens", label:"Latin 15: tend / tent / tens (to stretch or strain)", family:"Latin", base:"tend", baseMeaning:"to stretch or strain", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["in","dis","pre","con"]),
-    right: withMeanings(["s","ed","ing","er","ion","ive"])
-  },
-  { id:"latin_16_ceipt_ceive_cept", label:"Latin 16: ceit / ceive / cept (to take or catch)", family:"Latin", base:"cept", baseMeaning:"to take or catch", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["de","re","inter","con","per","ex"]),
-    right: withMeanings(["s","ed","ing","er","or","ion","able","ive"])
-  },
-  { id:"latin_17_tain_ten_tin", label:"Latin 17: tain / ten / tin (to hold)", family:"Latin", base:"tain", baseMeaning:"to hold", baseType:"bound",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["re","de","con","per","sus"]),
-    right: withMeanings(["s","ed","ing","er","able","tion"])
-  },
-  { id:"latin_18_pos_pound", label:"Latin 18: pos / pound (to put in place or set)", family:"Latin", base:"pos", baseMeaning:"to put in place or set", baseType:"bound & free (pound is free*)",
-    leftTitle:"Prefixes", rightTitle:"Suffixes",
-    left: withMeanings(["im","dis","de","com","ex","pro"]),
-    right: withMeanings(["s","ed","ing","er","or","tion","al"])
-  },
+/* =========================================================
+   Definition cache (localStorage)
+   ========================================================= */
+const DEF_CACHE_KEY = "morphology_defs_v1";
+const DEF_CACHE = loadDefs();
 
-  // Greek templates with multi-center bases (we will SPLIT these)
-  { id:"greek_19_gram_graph", label:"Greek 19: gram/graph (written or drawn)", family:"Greek", base:"gram / graph", baseMeaning:"written or drawn", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE,
-      part("auto","self"), part("bio","life"), part("chrono","time"), part("demo","people"),
-      part("geo","earth"), part("hydro","water"), part("phono","sound"), part("photo","light"),
-      part("tele","distant"), part("thermo","heat"), part("autobio","self + life")
-    ],
-    right: [NONE, part("er","one who"), part("ic","relating to"), part("ical","relating to"), part("y","subject or science")]
-  },
-  { id:"greek_20_logy_ology", label:"Greek 20: logy/ology (study of)", family:"Greek", base:"logy / ology", baseMeaning:"study of", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE,
-      part("bio","life"), part("chrono","time"), part("geo","earth"), part("hydro","water"),
-      part("graph","written"), part("meter","measure"), part("phono","sound"), part("psych","mind"),
-      part("techn","skill"), part("microbio","small + life")
-    ],
-    right: [NONE, part("ic","relating to"), part("ical","relating to"), part("ist","one who")]
-  },
-  { id:"greek_21_meter_metr", label:"Greek 21: meter/metr (measure)", family:"Greek", base:"meter / metr", baseMeaning:"measure", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE,
-      part("bio","life"), part("chrono","time"), part("geo","earth"), part("hydro","water"),
-      part("micro","small"), part("photo","light"), part("sphero","circle"), part("tele","distant"), part("thermo","heat")
-    ],
-    right: [NONE, part("ic","relating to"), part("y","subject or science")]
-  },
-  { id:"greek_22_phone_phon", label:"Greek 22: phone/phon (sound)", family:"Greek", base:"phone / phon", baseMeaning:"sound", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Right Parts",
-    left: [NONE, part("geo","earth"), part("gramo","written"), part("hydro","water"), part("micro","small"), part("tele","distant")],
-    right: [NONE, part("eme","unit"), part("ic","relating to")]
-  },
-  { id:"greek_23_sphere", label:"Greek 23: sphere (circle)", family:"Greek", base:"sphere", baseMeaning:"circle", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE,
-      part("astro","star"), part("bio","life"), part("eco","house"), part("geo","earth"),
-      part("hemi","half"), part("hydro","water"), part("micro","small"), part("photo","light"), part("thermo","heat")
-    ],
-    right: [NONE, part("ic","relating to")]
-  },
-  { id:"greek_24_cracy_crat", label:"Greek 24: cracy/crat (rule)", family:"Greek", base:"cracy / crat", baseMeaning:"rule", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE, part("auto","self"), part("demo","people"), part("techno","skill")],
-    right: [NONE, part("ic","relating to")]
-  },
-  { id:"greek_25_scope", label:"Greek 25: scope (watch or see)", family:"Greek", base:"scope", baseMeaning:"watch or see", baseType:"middle form",
-    leftTitle:"Left Forms", rightTitle:"Suffixes",
-    left: [NONE,
-      part("bio","life"), part("chrono","time"), part("hydro","water"), part("micro","small"),
-      part("phono","sound"), part("photo","light"), part("tele","distant"), part("thermo","heat")
-    ],
-    right: [NONE, part("ic","relating to")]
-  }
-];
-
-// --- Split any matrix whose base contains " / " into separate matrices
-function splitMultiCenterMatrices(list){
-  const out = [];
-  for(const m of list){
-    if(typeof m.base === "string" && m.base.includes("/")){
-      const parts = m.base.split("/").map(s => s.trim()).filter(Boolean);
-      for(const center of parts){
-        out.push({
-          ...m,
-          id: `${m.id}__${center}`,
-          base: center,
-          label: m.label.replace(m.base, center) // nicer dropdown label
-        });
-      }
-    } else {
-      out.push(m);
-    }
-  }
-  return out;
+function loadDefs(){
+  try{
+    const raw = localStorage.getItem(DEF_CACHE_KEY);
+    if(!raw) return {};
+    const obj = JSON.parse(raw);
+    return (obj && typeof obj === "object") ? obj : {};
+  }catch{ return {}; }
 }
-
-const MATRICES = splitMultiCenterMatrices(BASE_MATRICES);
-
-/* ===== Definitions (real if found, otherwise “possible”) ===== */
+function saveDefs(){
+  try{ localStorage.setItem(DEF_CACHE_KEY, JSON.stringify(DEF_CACHE)); }catch{}
+}
 function norm(s){ return String(s||"").toLowerCase().trim(); }
 
 async function fetchDefinition(word){
   const w = norm(word);
   if(!w || w === "—") return null;
+
+  if(DEF_CACHE[w]){
+    return { def: DEF_CACHE[w], source: "cache" };
+  }
+
   try{
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`);
     if(!res.ok) return null;
     const data = await res.json();
     const first = Array.isArray(data) ? data[0] : null;
     const def = first?.meanings?.[0]?.definitions?.[0]?.definition;
-    return (typeof def === "string" && def.trim()) ? def.trim() : null;
+    if(typeof def === "string" && def.trim()){
+      DEF_CACHE[w] = def.trim();
+      saveDefs();
+      return { def: def.trim(), source: "dictionary" };
+    }
+    return null;
   }catch{
     return null;
   }
 }
 
-function generatedDefinition(leftMeaning, baseMeaning, rightMeaning){
-  const parts = [];
-  if(leftMeaning) parts.push(leftMeaning);
-  if(baseMeaning) parts.push(baseMeaning);
-  let core = parts.filter(Boolean).join(" + ");
-  if(!core) core = baseMeaning || "something";
-  if(rightMeaning) return `Possible meaning (if it were a word): something related to “${core}” and “${rightMeaning}.”`;
-  return `Possible meaning (if it were a word): something related to “${core}.”`;
+/* =========================================================
+   Spelling helpers (tries likely spellings)
+   - We DO NOT “correct” kids; we offer options.
+   - We try a few variants and then check Word Key + dictionary.
+   ========================================================= */
+const VOWELS = new Set(["a","e","i","o","u"]);
+
+function generateSpellings(left, base, right){
+  const forms = new Set();
+
+  const raw = `${left}${base}${right}`;
+  if(raw) forms.add(raw);
+
+  // drop final 'e' before vowel suffix: duce+ion -> ducion (not perfect, but helps)
+  if(base.endsWith("e") && right && VOWELS.has(right[0])){
+    forms.add(`${left}${base.slice(0,-1)}${right}`);
+  }
+
+  // y -> i before common suffixes
+  if(base.endsWith("y") && right && ["s","es","ed","ing","er","est","able","ible"].includes(right)){
+    forms.add(`${left}${base.slice(0,-1)}i${right}`);
+  }
+
+  // handle comma suffix groups (e.g., "ion, ation" or "able, ible")
+  // We'll keep those as-is in UI, but for building we try each option too.
+  if(right && right.includes(",")){
+    right.split(",").map(s=>s.trim()).filter(Boolean).forEach(r=>{
+      forms.add(`${left}${base}${r}`);
+      if(base.endsWith("e") && r && VOWELS.has(r[0])) forms.add(`${left}${base.slice(0,-1)}${r}`);
+    });
+  }
+
+  return Array.from(forms).filter(Boolean);
 }
 
-/* ===== UI ===== */
+/* =========================================================
+   UI elements
+   ========================================================= */
 const matrixSelect = document.getElementById("matrixSelect");
 const leftListEl = document.getElementById("leftList");
 const rightListEl = document.getElementById("rightList");
@@ -493,6 +507,7 @@ const rightTitleEl = document.getElementById("rightTitle");
 
 const rootTextEl   = document.getElementById("rootText");
 const rootAltEl    = document.getElementById("rootAlt");
+const baseChipsEl  = document.getElementById("baseChips");
 const rootMeaningEl= document.getElementById("rootMeaning");
 const rootMetaEl   = document.getElementById("rootMeta");
 const statusBubble = document.getElementById("statusBubble");
@@ -503,38 +518,78 @@ const finalWordEl  = document.getElementById("finalWord");
 const finalDefEl   = document.getElementById("finalDefinition");
 const comboBubbleEl= document.getElementById("comboBubble");
 
+const bankStatsEl = document.getElementById("bankStats");
+const bankListEl = document.getElementById("bankList");
+
 const clearBtn = document.getElementById("clearBtn");
 const randomBtn = document.getElementById("randomBtn");
+const prefetchBtn = document.getElementById("prefetchBtn");
+const copyWordsBtn = document.getElementById("copyWordsBtn");
+const exportDefsBtn = document.getElementById("exportDefsBtn");
+const importDefsBtn = document.getElementById("importDefsBtn");
+
+const sentenceBox = document.getElementById("sentenceBox");
+const sentencePrompts = document.getElementById("sentencePrompts");
 
 let current = MATRICES[0];
 let chosenLeft = "";
 let chosenRight = "";
+let chosenBase = current.baseVariants[0];
 let defReqToken = 0;
 
 function renderMatrixSelect(){
   matrixSelect.innerHTML = "";
   MATRICES.forEach(m=>{
     const opt = document.createElement("option");
-    opt.value = m.id;
+    opt.value = String(m.num);
     opt.textContent = m.label;
     matrixSelect.appendChild(opt);
   });
 }
 
-function setStatus(){
-  statusBubble.innerHTML = `<div class="bubble good">✅ Matrix options loaded</div>`;
+function setStatus(html){
+  statusBubble.innerHTML = html ? html : "";
+}
+
+function renderBaseChips(){
+  baseChipsEl.innerHTML = "";
+  const vars = current.baseVariants || [current.baseVariants?.[0] || ""];
+  if(vars.length <= 1){
+    baseChipsEl.style.display = "none";
+    return;
+  }
+  baseChipsEl.style.display = "flex";
+
+  vars.forEach(v=>{
+    const chip = document.createElement("div");
+    chip.className = "chip" + (v === chosenBase ? " active" : "");
+    chip.textContent = v;
+    chip.title = "Same meaning, different spelling. Try both!";
+    chip.addEventListener("click", ()=>{
+      chosenBase = v;
+      renderAll();
+    });
+    baseChipsEl.appendChild(chip);
+  });
 }
 
 function renderRoot(){
-  leftTitleEl.textContent = current.leftTitle || "Left";
-  rightTitleEl.textContent = current.rightTitle || "Right";
+  leftTitleEl.textContent = (current.family === "Latin") ? "Prefixes" : "Left Forms";
+  rightTitleEl.textContent = "Suffixes / Right Parts";
 
-  rootTextEl.textContent = current.base;
-  rootAltEl.textContent  = `${current.family} matrix • ${current.baseType}`;
+  rootAltEl.textContent = `${current.family} • Matrix ${current.num}`;
+  rootTextEl.textContent = chosenBase;
   rootMeaningEl.textContent = current.baseMeaning;
 
-  rootMetaEl.textContent = `Build: left + base + right (you can choose both)`;
-  setStatus();
+  rootMetaEl.textContent = `Build: left + base + right (choose both if you want).`;
+
+  if((current.baseVariants||[]).length > 1){
+    setStatus(`<div class="bubble good">Same meaning — different spellings. Try both!</div>`);
+  } else {
+    setStatus(`<div class="bubble good">Ready to build!</div>`);
+  }
+
+  renderBaseChips();
 }
 
 function mkItem(obj, isActive){
@@ -548,7 +603,10 @@ function renderLists(){
   leftListEl.innerHTML = "";
   rightListEl.innerHTML = "";
 
-  current.left.forEach(p=>{
+  const leftParts = withMeanings(current.left || []);
+  const rightParts = withMeanings(current.right || []);
+
+  leftParts.forEach(p=>{
     const div = mkItem(p, p.value === chosenLeft);
     div.addEventListener("click", ()=>{
       chosenLeft = (chosenLeft === p.value) ? "" : p.value;
@@ -557,7 +615,7 @@ function renderLists(){
     leftListEl.appendChild(div);
   });
 
-  current.right.forEach(s=>{
+  rightParts.forEach(s=>{
     const div = mkItem(s, s.value === chosenRight);
     div.addEventListener("click", ()=>{
       chosenRight = (chosenRight === s.value) ? "" : s.value;
@@ -566,67 +624,142 @@ function renderLists(){
     rightListEl.appendChild(div);
   });
 
-  leftCountEl.textContent = `${current.left.length} options`;
-  rightCountEl.textContent  = `${current.right.length} options`;
+  leftCountEl.textContent = `${leftParts.length} options`;
+  rightCountEl.textContent = `${rightParts.length} options`;
 }
 
 function wordSum(){
   const parts = [];
   if(chosenLeft) parts.push(chosenLeft);
-  parts.push(current.base);
+  parts.push(chosenBase);
   if(chosenRight) parts.push(chosenRight);
   return parts.join(" + ");
 }
 
 function partMeanings(){
-  const leftM = chosenLeft ? (current.left.find(x=>x.value===chosenLeft)?.meaning || "") : "";
-  const rightM = chosenRight ? (current.right.find(x=>x.value===chosenRight)?.meaning || "") : "";
+  const leftM = chosenLeft ? (MEAN[chosenLeft] || "") : "";
+  const rightM = chosenRight ? (MEAN[chosenRight] || "") : "";
   const parts = [];
   if(chosenLeft) parts.push(`(${chosenLeft}-) ${leftM || "left meaning"}`);
-  parts.push(`${current.base} = ${current.baseMeaning}`);
+  parts.push(`${chosenBase} = ${current.baseMeaning}`);
   if(chosenRight) parts.push(`(-${chosenRight}) ${rightM || "right meaning"}`);
   return parts.join(" • ");
 }
 
-function wordCandidate(){
-  const left = chosenLeft || "";
-  const right = chosenRight || "";
-  return `${left}${current.base}${right}` || "—";
+function generatedDefinition(leftMeaning, baseMeaning, rightMeaning){
+  const bits = [];
+  if(leftMeaning) bits.push(leftMeaning);
+  if(baseMeaning) bits.push(baseMeaning);
+  const core = bits.filter(Boolean).join(" + ") || baseMeaning || "something";
+  if(rightMeaning) return `Possible meaning (if it were a word): something related to “${core}” and “${rightMeaning}.”`;
+  return `Possible meaning (if it were a word): something related to “${core}.”`;
 }
 
-async function renderDefinition(){
+function getWordKeySet(){
+  const list = WORD_KEY[String(current.num)] || [];
+  return new Set(list.map(norm));
+}
+
+function pickBestCandidate(candidates){
+  const wk = getWordKeySet();
+  for(const c of candidates){
+    if(wk.has(norm(c))) return { word: c, inWordKey: true };
+  }
+  return { word: candidates[0] || "—", inWordKey: false };
+}
+
+function buildCandidate(){
+  const left = chosenLeft || "";
+  const right = chosenRight || "";
+  const candidates = generateSpellings(left, chosenBase, right);
+  if(!candidates.length) return { word:"—", candidates:[], inWordKey:false };
+  const best = pickBestCandidate(candidates);
+  return { word: best.word, candidates, inWordKey: best.inWordKey };
+}
+
+function renderWordBank(highlightWord){
+  const list = WORD_KEY[String(current.num)] || [];
+  const wkSet = new Set(list.map(norm));
+
+  bankStatsEl.textContent = `Word Bank size: ${list.length} • (These are the “real-word” combos listed in the PDF Word Key.)`;
+
+  const hw = norm(highlightWord);
+  bankListEl.innerHTML = list.map(w=>{
+    const isHit = (norm(w) === hw);
+    const cls = "wordTag " + (isHit ? "hit" : "");
+    return `<span class="${cls}">${w}</span>`;
+  }).join("");
+}
+
+function setSentencePrompts(word){
+  if(!word || word==="—"){
+    sentencePrompts.textContent = "";
+    return;
+  }
+  sentencePrompts.innerHTML = `
+    <div class="tiny">
+      Prompts: “I noticed that <b>${word}</b> means…” • “A time I might use <b>${word}</b> is…” •
+      “I think <b>${word}</b> is real/fake because…”
+    </div>
+  `;
+}
+
+async function renderDefinitionAndBadges(){
   const token = ++defReqToken;
 
   if(!chosenLeft && !chosenRight){
     finalWordEl.textContent = "—";
     finalDefEl.textContent = "Build a combo to see a definition.";
     comboBubbleEl.innerHTML = "";
+    renderWordBank("");
+    setSentencePrompts("");
     return;
   }
 
-  const candidate = wordCandidate();
-  finalWordEl.textContent = candidate;
+  const { word, candidates, inWordKey } = buildCandidate();
 
-  const leftMeaning = chosenLeft ? (current.left.find(x=>x.value===chosenLeft)?.meaning || "") : "";
-  const rightMeaning = chosenRight ? (current.right.find(x=>x.value===chosenRight)?.meaning || "") : "";
+  finalWordEl.textContent = word;
+  renderWordBank(word);
+  setSentencePrompts(word);
 
-  const realDef = await fetchDefinition(candidate);
+  // “Meaning math” (still shown in word sum card)
+  const leftMeaning = chosenLeft ? (MEAN[chosenLeft] || "") : "";
+  const rightMeaning = chosenRight ? (MEAN[chosenRight] || "") : "";
+
+  // If the best candidate isn’t in Word Key, still check dictionary.
+  const defObj = await fetchDefinition(word);
 
   if(token !== defReqToken) return;
 
-  if(realDef){
-    finalDefEl.textContent = realDef;
-    comboBubbleEl.innerHTML = `<div class="bubble good">Dictionary found a definition</div>`;
+  const wkBadge = inWordKey
+    ? `<div class="bubble good">✅ In Word Key (PDF “real word” list)</div>`
+    : `<div class="bubble warn">🤔 Not in Word Key — still test it! (Try the other base spelling too.)</div>`;
+
+  const multiBadge = (candidates.length > 1)
+    ? `<div class="bubble">Spelling tries: ${candidates.slice(0,5).join(", ")}${candidates.length>5 ? "…" : ""}</div>`
+    : "";
+
+  if(defObj && defObj.def){
+    finalDefEl.textContent = defObj.def;
+    comboBubbleEl.innerHTML = `
+      ${wkBadge}
+      <div class="bubble good">📚 Real definition (${defObj.source === "cache" ? "saved" : "dictionary"})</div>
+      ${multiBadge}
+    `;
   } else {
     finalDefEl.textContent = generatedDefinition(leftMeaning, current.baseMeaning, rightMeaning);
-    comboBubbleEl.innerHTML = `<div class="bubble">Dictionary didn’t recognize it — try it in a sentence!</div>`;
+    comboBubbleEl.innerHTML = `
+      ${wkBadge}
+      <div class="bubble bad">No dictionary definition found — so we built a “possible meaning.”</div>
+      ${multiBadge}
+    `;
   }
 }
 
 function renderOutputs(){
   wordSumEl.textContent = wordSum();
   partMeaningsEl.textContent = partMeanings();
-  renderDefinition();
+  renderDefinitionAndBadges();
 }
 
 function renderAll(){
@@ -635,35 +768,125 @@ function renderAll(){
   renderOutputs();
 }
 
-function setCurrentMatrix(id){
-  current = MATRICES.find(m=>m.id===id) || MATRICES[0];
+function setCurrentMatrix(num){
+  current = MATRICES.find(m => String(m.num) === String(num)) || MATRICES[0];
   chosenLeft = "";
   chosenRight = "";
+  chosenBase = (current.baseVariants && current.baseVariants.length) ? current.baseVariants[0] : "";
+  sentenceBox.value = "";
   renderAll();
 }
 
-/* Actions */
-clearBtn.addEventListener("click", ()=>{
+/* =========================================================
+   Buttons
+   ========================================================= */
+document.getElementById("clearBtn").addEventListener("click", ()=>{
   chosenLeft = "";
   chosenRight = "";
+  sentenceBox.value = "";
   renderAll();
 });
 
-randomBtn.addEventListener("click", ()=>{
-  const leftOpts = current.left.filter(x=>x.value);
-  const rightOpts = current.right.filter(x=>x.value);
+document.getElementById("randomBtn").addEventListener("click", ()=>{
+  const leftOpts = (current.left || []);
+  const rightOpts = (current.right || []);
 
-  chosenLeft = (Math.random() < 0.75 && leftOpts.length) ? leftOpts[Math.floor(Math.random()*leftOpts.length)].value : "";
-  chosenRight = (Math.random() < 0.75 && rightOpts.length) ? rightOpts[Math.floor(Math.random()*rightOpts.length)].value : "";
+  chosenLeft = (Math.random() < 0.75 && leftOpts.length) ? leftOpts[Math.floor(Math.random()*leftOpts.length)] : "";
+  chosenRight = (Math.random() < 0.75 && rightOpts.length) ? rightOpts[Math.floor(Math.random()*rightOpts.length)] : "";
+
+  const vars = current.baseVariants || [];
+  if(vars.length) chosenBase = vars[Math.floor(Math.random()*vars.length)];
+
   renderAll();
 });
 
 matrixSelect.addEventListener("change", ()=> setCurrentMatrix(matrixSelect.value));
 
-/* Init */
+copyWordsBtn.addEventListener("click", async ()=>{
+  const list = WORD_KEY[String(current.num)] || [];
+  const txt = list.join(", ");
+  try{
+    await navigator.clipboard.writeText(txt);
+    setStatus(`<div class="bubble good">Copied Word Bank to clipboard!</div>`);
+    setTimeout(()=>renderRoot(), 900);
+  }catch{
+    setStatus(`<div class="bubble warn">Copy failed — your browser blocked clipboard.</div>`);
+    setTimeout(()=>renderRoot(), 1200);
+  }
+});
+
+exportDefsBtn.addEventListener("click", ()=>{
+  const payload = JSON.stringify(DEF_CACHE, null, 2);
+  const blob = new Blob([payload], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "morpheme-definitions.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+});
+
+importDefsBtn.addEventListener("click", ()=>{
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json";
+  input.onchange = async () => {
+    const file = input.files && input.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      if(obj && typeof obj === "object"){
+        for(const [k,v] of Object.entries(obj)){
+          if(typeof v === "string" && v.trim()){
+            DEF_CACHE[norm(k)] = v.trim();
+          }
+        }
+        saveDefs();
+        setStatus(`<div class="bubble good">Imported definitions!</div>`);
+        setTimeout(()=>renderRoot(), 900);
+      }
+    }catch{
+      setStatus(`<div class="bubble bad">Import failed — invalid JSON file.</div>`);
+      setTimeout(()=>renderRoot(), 1200);
+    }
+  };
+  input.click();
+});
+
+prefetchBtn.addEventListener("click", async ()=>{
+  const words = WORD_KEY[String(current.num)] || [];
+  if(!words.length){
+    setStatus(`<div class="bubble warn">No Word Bank for this matrix.</div>`);
+    setTimeout(()=>renderRoot(), 1000);
+    return;
+  }
+  setStatus(`<div class="bubble warn">Prefetching… (this may take a bit)</div>`);
+  // Prefetch sequentially to be gentle
+  let hit = 0;
+  for(let i=0;i<words.length;i++){
+    const w = words[i];
+    const n = norm(w);
+    if(DEF_CACHE[n]) { hit++; continue; }
+    const defObj = await fetchDefinition(w);
+    if(defObj && defObj.def) hit++;
+    // light progress updates
+    if(i % 10 === 0){
+      setStatus(`<div class="bubble warn">Prefetching… ${i+1}/${words.length} • saved: ${hit}</div>`);
+    }
+  }
+  setStatus(`<div class="bubble good">Done! Saved definitions: ${hit}/${words.length}</div>`);
+  setTimeout(()=>renderRoot(), 1200);
+});
+
+/* =========================================================
+   Init
+   ========================================================= */
 renderMatrixSelect();
-setCurrentMatrix(MATRICES[0].id);
-matrixSelect.value = MATRICES[0].id;
+setCurrentMatrix(MATRICES[0].num);
+matrixSelect.value = String(MATRICES[0].num);
 </script>
 </body>
 </html>
